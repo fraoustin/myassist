@@ -41,7 +41,7 @@ class checkAdmin(object):
 
 @login_required
 def currentuser():
-    return render_template('user.html', user=current_user, backurl=None)
+    return render_template('user.html', user=current_user, backurl=None, plugins=current_app.config['PLUGINS'])
 
 
 @login_required
@@ -49,18 +49,18 @@ def view_user(id):
     try:
         user = User.query.filter_by(id=id).first()
         if user is not None:
-            return render_template('user.html', user=user, backurl="/users")
+            return render_template('user.html', user=user, backurl="/users", plugins=current_app.config['PLUGINS'])
         else:
             raise('user not found')
     except Exception:
         flash('Not user identified', 'error')
-        return render_template('user.html', user=current_user, backurl=None)
+        return render_template('user.html', user=current_user, backurl=None, plugins=current_app.config['PLUGINS'])
 
 
 @login_required
 @checkAdmin()
 def new_user():
-    return render_template('user.html', user=User(), backurl="/users")
+    return render_template('user.html', user=User(), backurl="/users", plugins=current_app.config['PLUGINS'])
 
 
 @login_required
@@ -137,7 +137,7 @@ def delete_user(id):
 @login_required
 @checkAdmin()
 def users():
-    return render_template("users.html", users=User.all(sortby=User.name), backurl=None, current_user=current_user, authorizations=GroupOfAuthorization.all(sortby=GroupOfAuthorization.name))
+    return render_template("users.html", users=User.all(sortby=User.name), backurl=None, current_user=current_user, authorizations=GroupOfAuthorization.all(sortby=GroupOfAuthorization.name), plugins=current_app.config['PLUGINS'])
 
 
 def login():
@@ -176,7 +176,7 @@ def view_authorization(id):
         group = GroupOfAuthorization.get(id=id)
         if group is not None:
             authorizations = ['%s_%s' % (elt.modul, elt.key) for elt in group.authorizations]
-            return render_template('authorization.html', group=group, authorizations=authorizations, authorizationsofapp=authorization_of_app())
+            return render_template('authorization.html', group=group, authorizations=authorizations, authorizationsofapp=authorization_of_app(), plugins=current_app.config['PLUGINS'])
         else:
             raise('Authorizations not found')
     except Exception:
@@ -231,7 +231,7 @@ def delete_authorization(id):
 @login_required
 @checkAdmin()
 def authorizations():
-    return render_template("authorizations.html", authorizations=GroupOfAuthorization.all(sortby=GroupOfAuthorization.name), group=GroupOfAuthorization(), authorizationsofapp=authorization_of_app())
+    return render_template("authorizations.html", authorizations=GroupOfAuthorization.all(sortby=GroupOfAuthorization.name), group=GroupOfAuthorization(), authorizationsofapp=authorization_of_app(), plugins=current_app.config['PLUGINS'])
 
 
 class Auth(Blueprint):

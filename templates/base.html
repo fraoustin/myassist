@@ -14,8 +14,11 @@
     <body>
         {% if current_user.is_authenticated %}
         <div id="menu" class="siimple-menu siimple--float-left">
-            <a class="siimple-menu-item" href="/" id="btn-home"><div class="siimple-btn--big icon-robot" title="myassist"></div></a>
-            {% block navbar %}{% endblock %}
+            {% for plugin in plugins %}
+            {% if plugin.icon %}
+            <a class="siimple-menu-item" href="/{{ plugin._nodename }}" id="btn-home"><div class="siimple-btn--big icon-{{ plugin._nodename }}" title="{{ plugin._nodename }}"></div></a>
+            {% endif %}
+            {% endfor %}
             <div id="menu-bottom">
             {% if current_user.isadmin %}
                 {% block navbarbottom %}
@@ -51,5 +54,9 @@
             </div>
         </div>
         <script src="/javascripts/myassist.js"></script>
+        {% for plugin in plugins %}
+        <script src="/{{ plugin._nodename }}/plugin.js"></script>
+        <link rel="stylesheet" href="/{{ plugin._nodename }}/plugin.css">
+        {% endfor %}
     </body>
 </html>

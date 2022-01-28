@@ -3,13 +3,14 @@ import logging
 import importlib
 import configparser
 from flask import Flask, render_template
-
 from db import db
 from auth import Auth, login_required
 from info import Info
 from static import Static
 from paramapplication import ParamApplication
 from core import Core
+from robot import Robot
+
 
 MYASSIST_LOGO = """
       #######
@@ -32,7 +33,7 @@ MYASSIST_LOGO = """
  # #     #     # #
   #      #      #
   #      #      #
-   #############   
+   #############
 """
 
 toBoolean = {'true': True, 'false': False}
@@ -61,6 +62,19 @@ database_file = "sqlite:///{}".format(os.path.join(MYASSIST_DIR, "myassist.db"))
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('MYASSIST_DB', config['MYASSIST'].get('Db', database_file))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# generate robot
+robot = Robot(
+    'Jarvis',
+    storage_adapter='chatterbot.storage.SQLStorageAdapter',
+    database_uri="sqlite:///{}".format(os.path.join(MYASSIST_DIR, "chatbot.db")),
+    logic_adapters=[
+        {
+            'import_path': 'chatterbot.logic.BestMatch',
+            'default_response': 'notfound',
+            'maximum_similarity_threshold': 0.90
+        }],
+)
+
 # register Auth
 app.register_blueprint(Auth(url_prefix="/"))
 app.config['APP_NAME'] = os.environ.get('MYASSIST_NAME', 'My Assist')
@@ -79,11 +93,11 @@ app.register_blueprint(ParamApplication(url_prefix="/"))
 # register MYASSIST
 app.register_blueprint(Core(url_prefix="/"))
 app.config['PLUGINS'] = []
-NODES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nodes')
 for node in [node for node in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins')) if os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins', node)) and '_' not in node]:
-    app.config['PLUGINS'].append(node)
     module = importlib.import_module('plugins.%s.main' % node)
-    app.register_blueprint(getattr(module, node.capitalize())(name=node, url_prefix="/"))
+    plugin = getattr(module, node.capitalize())(name=node, url_prefix="/")
+    app.register_blueprint(plugin)
+    app.config['PLUGINS'].append(plugin)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -94,7 +108,7 @@ def home():
 
 if __name__ == "__main__":
     print(MYASSIST_LOGO)
-    print("MYASSIST v%s" % app.config["VERSION"])
+    print("MYASSIST %s" % app.config["VERSION"])
     db.init_app(app)
     with app.app_context():
         db.create_all()

@@ -33,10 +33,6 @@ a.gravatar {
     transform: rotate(-45deg);
 }
 
-.siimple-tip--success::before {
-    content: "+";
-}
-
 .general.siimple-tip {
     width: 25%;
     margin: auto;

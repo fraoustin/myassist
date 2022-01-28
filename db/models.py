@@ -1,8 +1,5 @@
-from flask_login import current_user
-import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import hashlib
-import json
 from db import db
 
 
@@ -19,14 +16,6 @@ class User(db.Model):
     apikey = db.Column(db.String, nullable=True)
     token = db.Column(db.String, nullable=True)
     group = db.Column(db.String, nullable=True)
-
-    def save(self):
-        db.Model.save(self)
-        if self.personnalproject is not None:
-            prj = Project(ispersonnal=True, name="personnal", resume="")
-            prj.save()
-            link = ProjectUser(iduser=self.id, idproject=prj.id)
-            link.save()
 
     def __setattr__(self, name, value):
         if name in ('isadmin', 'gravatar') and type(value) == str:

@@ -1,26 +1,12 @@
-from flask import Blueprint, flash, redirect, url_for, request, render_template, current_app
+from flask import Blueprint, render_template, current_app
 from flask_login import login_required, current_user
-from auth import checkAdmin, User
-import json
-import os
-import shutil
-import time
-import logging
-import threading
-
 
 __version__ = '0.1.0'
-
-LEVEL_LOG = {'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL}
 
 
 @login_required
 def core():
-    return render_template('core.html', user=current_user)
+    return render_template('core.html', user=current_user, plugins=current_app.config['PLUGINS'])
 
 
 class Core(Blueprint):

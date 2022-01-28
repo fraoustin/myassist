@@ -1,0 +1,63 @@
+
+@font-face{
+    font-family:icomoon;
+    src:url(/chat/icomoon.woff) format('woff');
+    font-weight:400;
+    font-style:normal
+}
+
+.icon-chat,
+.icon-dialog{
+    font-family: icomoon;
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.icon-chat:before {
+    content: "\eac6"
+}
+
+.icon-dialog:before {
+    content: "\e96e"
+}
+
+.chatter {
+    margin-bottom: 10px;
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: calc(100% - 110px);
+}
+
+.chatter.icon-dialog:before {
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.chatter .siimple-input {
+    width: -webkit-fill-available;
+    border: 2px solid #eef2f7;
+    background-color: unset;
+}
+
+#chat {
+    margin-bottom: 50px;
+}
+
+.dialog {
+    text-align: right;
+    display: flex;
+    justify-content: right;
+}
+
+.response {
+    text-align: left;
+    display: flex;
+    justify-content: left;
+}

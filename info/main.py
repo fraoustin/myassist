@@ -13,7 +13,7 @@ def info():
     for b in current_app.blueprints:
         modul = importlib.import_module(current_app.blueprints[b].__class__.__module__)
         blueprints[current_app.blueprints[b].__class__.__name__] = {'name': current_app.blueprints[b].__class__.__name__, 'version': modul.__version__}
-    return render_template('info.html', version=current_app.config.get("VERSION", "0.0.0"), flaskversion=flaskversion, blueprints=[blueprints[b] for b in blueprints])
+    return render_template('info.html', version=current_app.config.get("VERSION", "0.0.0"), flaskversion=flaskversion, blueprints=[blueprints[b] for b in blueprints], plugins=current_app.config['PLUGINS'])
 
 
 class Info(Blueprint):

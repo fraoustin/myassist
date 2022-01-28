@@ -1,0 +1,49 @@
+chatbot:
+    conversions:
+        answers:
+            - coucou
+            - salut
+            - salu
+            - bonjour
+            - hi
+            - hey
+            - salut jarvis
+            - bonjour jarvis
+            - tu es la
+            - tu m'entends
+        responses:
+            - bonjour monsieur
+            - salut
+            - bonjour
+    salutation:
+        answers:
+            - jarvis
+        responses:
+            - oui monsieur
+            - que puis je pour vous
+            - monsieur
+    notfound:
+        answers:
+            - notfound
+        responses:
+            - je n'ai pas compris
+            - je n'ai pas de réponse
+            - désolé je n'ai pas de réponse
+    thank:
+        answers:
+            - merci
+            - bravo
+            - ok
+        responses:
+            - de rien
+            - puis je faire autre chose
+    who:
+        answers:
+            - quel est ton nom
+            - comment t'appelles tu
+            - comment te nommes tu
+            - qui es tu
+        responses:
+            - je m'appelle Jarvis
+            - je suis Jarvis
+            - jarvis

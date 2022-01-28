@@ -24,7 +24,7 @@ def view():
     params['APP_DEBUG'] = current_app.config.get("APP_DEBUG", "")
     params['APP_DIR'] = current_app.config.get("APP_DIR", "")
     params['APP_LOGS'] = current_app.config.get("APP_LOGS", "")
-    return render_template('paramapp.html', **params)
+    return render_template('paramapp.html', plugins=current_app.config['PLUGINS'], **params)
 
 
 @login_required
