@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<table id="radios" style="width:100%">
+    <tr>
+        <td><label class="siimple-label">Liste of Radios</label></td>
+        <td></td>
+        <td class="minimal"><div class="siimple-btn--big icon-radio-add siimple--float-right" onclick="add_radio()"></div></td>
+    </tr>
+    {% for radio in radios %}
+    <tr>
+        <td>{{ radio }}</td>
+        <td>{{ radios[radio] }}</td>
+        <td><div class="siimple-btn--big icon-radio-del siimple--float-right" onclick="del_radio(this)" id="{{ radio }}"></div</td>
+    </tr>
+    {% endfor %}
+    </div>
+</table>
+
+
+    
+<div class="siimple-modal siimple-modal--medium" id="addradio" style="display:none;">
+    <div class="siimple-modal-content">
+        <div class="siimple-modal-header">
+            <div class="siimple-modal-header-title">Add Radio</div>
+            <div class="siimple-modal-header-close" onclick="close_radio()"></div>
+        </div>
+        <div class="siimple-modal-body">
+            <table style="width: 100%;">
+                <tr>
+                    <td><label class="siimple-label">Name: </label></td>
+                    <td><input name="name" id="name" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Url: </label></td>
+                    <td><input name="url" id="url" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+            </table>
+        </div>
+        <div class="siimple-modal-footer">
+            <div class="siimple-navbar">
+                <div class="siimple--float-right">
+                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_radio()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

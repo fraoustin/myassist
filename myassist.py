@@ -63,17 +63,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('MYASSIST_DB', config['MY
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # generate robot
-robot = Robot(
-    'Jarvis',
-    storage_adapter='chatterbot.storage.SQLStorageAdapter',
-    database_uri="sqlite:///{}".format(os.path.join(MYASSIST_DIR, "chatbot.db")),
-    logic_adapters=[
-        {
-            'import_path': 'chatterbot.logic.BestMatch',
-            'default_response': 'notfound',
-            'maximum_similarity_threshold': 0.90
-        }],
-)
+robot = Robot('Jarvis')
 
 # register Auth
 app.register_blueprint(Auth(url_prefix="/"))

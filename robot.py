@@ -1,7 +1,24 @@
 from queue import Queue
 import threading
-from chatterbot import ChatBot
-from chatterbot.trainers import ListTrainer
+from difflib import SequenceMatcher
+import gtts
+import time
+import tempfile
+import os
+import random
+from os.path import abspath, exists
+from urllib.request import pathname2url
+from gi.repository import Gst
+import gi
+gi.require_version('Gst', '1.0')
+
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+
+class PlaysoundException(Exception):
+    pass
 
 
 class QueryThread(threading.Thread):
@@ -48,17 +65,26 @@ class Event(object):
         [obs(*args, **kw) for obs in self._obss]
 
 
-class Robot(ChatBot, metaclass=Singleton):
+class Robot(metaclass=Singleton):
 
-    def __init__(self, *args, **kw):
-        ChatBot.__init__(self, *args, **kw)
-        self._trainer = ListTrainer(self)
+    def __init__(self, name, level=0.9):
+        self._level = level
         self._events = []
+        self._responses = []
         self._queue = Queue()
         self._thread = None
+        self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
+        Gst.init(None)
 
     def training(self, answer, response):
-        self._trainer.train([answer, response])
+        self._responses.append({"answer": answer, "response": response})
+
+    def remove_training(self, answer, response):
+        print(len(self._responses))
+        if {"answer": answer, "response": response} in self._responses:
+            print("je supprime")
+            self._responses.remove({"answer": answer, "response": response})
+            print(len(self._responses))
 
     def add_event(self, name, obs):
         if name not in [event.name for event in self._events]:
@@ -77,5 +103,36 @@ class Robot(ChatBot, metaclass=Singleton):
             self._thread.start()
 
     def _query(self, value):
-        response = str(self.get_response(value))
+        best_match = {"level": 0, "response": []}
+        for response in self._responses:
+            test = similar(value, response["answer"])
+            if test > best_match["level"]:
+                best_match = {"level": test, "response": [response["response"], ]}
+            if test == best_match["level"]:
+                best_match["response"].append(response["response"])
+        if best_match["level"] >= self._level:
+            response = random.choice(best_match["response"])
+        else:
+            response = "notfound"
         self.emit_event(value, response)
+
+    def _stopsound(self, *args):
+        self._playbin.set_state(Gst.State.READY)
+
+    def _playsound(self, url):
+        self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
+        if url.startswith(('http://', 'https://')):
+            self._playbin.props.uri = url
+        else:
+            path = abspath(url)
+            if not exists(path):
+                raise PlaysoundException(u'File not found: {}'.format(path))
+            self._playbin.props.uri = 'file://' + pathname2url(path)
+        self._playbin.set_state(Gst.State.PLAYING)
+
+    def speak(self, words):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            tts = gtts.gTTS(words, lang="fr")
+            path = os.path.join(tmpdirname, "%s.mp3" % int(time.time()))
+            tts.save(path)
+            self._playsound(path)

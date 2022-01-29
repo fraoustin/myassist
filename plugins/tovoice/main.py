@@ -1,18 +1,11 @@
 from plugins import Plugin
 from robot import Robot
-import gtts
-from playsound import playsound
-import time
-import tempfile
-import os
+
+__version__ = "0.0.1"
 
 
 def tovoice(value, response):
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        tts = gtts.gTTS(response, lang="fr")
-        path = os.path.join(tmpdirname, "%s.mp3" % int(time.time()))
-        tts.save(path)
-        playsound(path)
+    Robot().speak(response)
 
 
 class Tovoice(Plugin):
