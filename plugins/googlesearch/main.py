@@ -63,5 +63,5 @@ def googlesearch(value, response):
 
 class Googlesearch(Plugin):
     def __init__(self, *args, **kw):
-        Plugin.__init__(self, *args, **kw)
+        Plugin.__init__(self, icon=False, *args, **kw)
         Robot().add_event("notfound", googlesearch)

@@ -34,6 +34,8 @@ chatbot:
             - merci
             - bravo
             - ok
+            - super
+            - je t'aime
         responses:
             - de rien
             - puis je faire autre chose
