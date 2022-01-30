@@ -1,0 +1,19 @@
+chatbot:
+    volume_up:
+        answers:
+            - monte le son
+            - augmente le son
+        responses:
+            - volume_up
+    volume_down:
+        answers:
+            - baisse le son
+            - c'est trop fort
+        responses:
+            - volume_down
+    volume_mute:
+        answers:
+            - mute
+            - silence
+        responses:
+            - volume_mute

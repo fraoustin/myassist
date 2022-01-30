@@ -73,18 +73,15 @@ class Robot(metaclass=Singleton):
         self._responses = []
         self._queue = Queue()
         self._thread = None
-        self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
+        self._playbin = None
         Gst.init(None)
 
     def training(self, answer, response):
         self._responses.append({"answer": answer, "response": response})
 
     def remove_training(self, answer, response):
-        print(len(self._responses))
         if {"answer": answer, "response": response} in self._responses:
-            print("je supprime")
             self._responses.remove({"answer": answer, "response": response})
-            print(len(self._responses))
 
     def add_event(self, name, obs):
         if name not in [event.name for event in self._events]:
@@ -117,7 +114,10 @@ class Robot(metaclass=Singleton):
         self.emit_event(value, response)
 
     def _stopsound(self, *args):
-        self._playbin.set_state(Gst.State.READY)
+        try:
+            self._playbin.set_state(Gst.State.READY)
+        except Exception:
+            pass
 
     def _playsound(self, url):
         self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
