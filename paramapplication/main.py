@@ -9,13 +9,13 @@ __version__ = '0.1.0'
 
 PARAMS = []
 
+def get_params():
+    return [param for param in ParamApp.all(sortby=ParamApp.key) if param.key.startswith("basic_")]
 
 @login_required
 @checkAdmin()
 def view():
     params = {}
-    for param in PARAMS:
-        params[param] = ParamApp.getValue(param)
     params['APP_DESC'] = current_app.config.get("APP_DESC", "")
     params['APP_NAME'] = current_app.config.get("APP_NAME", "")
     params['APP_VERSION'] = current_app.config.get("VERSION", "")
@@ -24,15 +24,15 @@ def view():
     params['APP_DEBUG'] = current_app.config.get("APP_DEBUG", "")
     params['APP_DIR'] = current_app.config.get("APP_DIR", "")
     params['APP_LOGS'] = current_app.config.get("APP_LOGS", "")
-    return render_template('paramapp.html', plugins=current_app.config['PLUGINS'], **params)
+    return render_template('paramapp.html', plugins=current_app.config['PLUGINS'], params_app=get_params(), **params)
 
 
 @login_required
 @checkAdmin()
 def update():
-    for param in PARAMS:
-        paramregister = ParamApp.get(param)
-        paramregister.value = request.form.get(param, '')
+    for paramregister in get_params():
+        print(paramregister.key, request.form.get(paramregister.key, ''))
+        paramregister.value = request.form.get(paramregister.key, '')
         paramregister.save()
     return redirect(url_for('paramapplication.view'))
 

@@ -50,6 +50,12 @@
                 <td><div class="siimple-h3">Application</div></td>
                 <td></td>
             </tr>
+            {% for param in params_app %}            
+            <tr>
+                <td><label class="siimple-label">{{ param.key[6:] }}</label></td>
+                <td><input name="{{ param.key }}" id="{{ param.key }}" class="siimple-input siimple-input--fluid" value="{{ param.value }}"></td>
+            </tr>
+            {% endfor %}
         </table>
     </form>
 {% endblock %}

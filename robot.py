@@ -110,6 +110,7 @@ class Robot(metaclass=Singleton):
         if best_match["level"] >= self._level:
             response = random.choice(best_match["response"])
         else:
+            print(best_match["level"], best_match["response"][0])
             response = "notfound"
         self.emit_event(value, response)
 

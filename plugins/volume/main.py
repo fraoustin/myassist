@@ -3,6 +3,10 @@ from robot import Robot
 import os
 import yaml
 from pulsectl import Pulse, PulseVolumeInfo
+from db import db
+from db.models import ParamApp
+
+__version__ = "0.0.1"
 
 
 def get_volume():
@@ -21,9 +25,12 @@ def set_volume(value):
 
 def volume_up(value, response):
     vol = get_volume()
-    new_vol = vol + 0.1
-    if new_vol > 1:
-        new_vol = 1
+    if vol == 0:
+        new_vol = float(ParamApp.getValue("basic_volume"))
+    else:
+        new_vol = vol + 0.1
+        if new_vol > 1:
+            new_vol = 1
     set_volume(new_vol)
 
 
@@ -55,3 +62,8 @@ class Volume(Plugin):
         Robot().add_event("volume_up", volume_up)
         Robot().add_event("volume_down", volume_down)
         Robot().add_event("volume_mute", volume_mute)
+
+    def init_db(self):
+        if ParamApp.get("basic_volume") is None:
+            db.session.add(ParamApp(key="basic_volume", value="0.5"))
+            db.session.commit()

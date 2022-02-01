@@ -49,3 +49,9 @@ chatbot:
             - je m'appelle Jarvis
             - je suis Jarvis
             - jarvis
+    stop:
+        answers:
+            - non
+            - oui
+        responses:
+            - ""

@@ -2,6 +2,8 @@ from plugins import Plugin
 from robot import Robot
 from bs4 import BeautifulSoup
 from requests import get
+from db import db
+from db.models import ParamApp
 
 __version__ = "0.0.1"
 
@@ -54,7 +56,7 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
 
 
 def googlesearch(value, response):
-    response = search(value, lang='fr')
+    response = search(value, lang=ParamApp.getValue("basic_langue"))
     if response == 'notfound':
         Robot().query(response)
     else:

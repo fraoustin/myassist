@@ -1,0 +1,8 @@
+chatbot:
+    radio:
+        answers:
+            - joue
+            - lance
+        stop:
+            - stop
+            - arrête

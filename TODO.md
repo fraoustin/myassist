@@ -4,8 +4,10 @@
 - similarity as parameter
 - name of robot as parameter
 - manage multi langue
-- avoir une radio par défaut?
 - jouer une playlist
 - gestion des mails, agenda
-- ajout alarme minuterie
-- gestion d'un volume par défaut après mute
+- ajout alarme (module schedule https://github.com/dbader/schedule)
+
+
+apt-get install gir1.2-gst-rtsp-server-1.0
+apt-get install libpulse0

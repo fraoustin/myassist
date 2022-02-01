@@ -1,0 +1,14 @@
+chatbot:
+    timer:
+        answers:
+            - lance une minuterie
+            - lance minuterie
+            - minuterie
+        responses:
+            - timer
+    response:
+        responses:
+            - minuterie lancer pour
+    end:
+        responses:
+            - fin minuterie

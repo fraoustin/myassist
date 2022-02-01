@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, current_app
 from flask_login import login_required, current_user
+from db.models import ParamApp
+from db import db
 
 __version__ = '0.1.0'
 
@@ -19,3 +21,8 @@ class Core(Blueprint):
             Blueprint.register(self, app, options)
         except Exception:
             app.logger.error("init core on register is failed")
+
+    def init_db(self):
+        if ParamApp.get("basic_langue") is None:
+            db.session.add(ParamApp(key="basic_langue", value="fr"))
+            db.session.commit()

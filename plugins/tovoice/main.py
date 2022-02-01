@@ -5,7 +5,8 @@ __version__ = "0.0.1"
 
 
 def tovoice(value, response):
-    Robot().speak(response)
+    if len(response) > 0:
+        Robot().speak(response)
 
 
 class Tovoice(Plugin):
