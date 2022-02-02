@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<table id="timings" style="width:100%">
+    <tr>
+        <td><label class="siimple-label">Timing</label></td>
+        <td></td>
+        <td class="minimal"><div class="siimple-btn--big icon-timing-add siimple--float-right" onclick="add_timing()"></div></td>
+    </tr>
+    {% for timing in timings %}
+    <tr>
+        <td>{{ timing["name"] }}</td>
+        <td></td>
+        <td><div class="siimple-btn--big icon-timing-del siimple--float-right" onclick="del_timing(this)" id="{{ timing['name'] }}"></div</td>
+    </tr>
+    {% endfor %}
+    </div>
+</table>
+
+
+    
+<div class="siimple-modal siimple-modal--medium" id="addtiming" style="display:none;">
+    <div class="siimple-modal-content">
+        <div class="siimple-modal-header">
+            <div class="siimple-modal-header-title">Timing</div>
+            <div class="siimple-modal-header-close" onclick="close_timing()"></div>
+        </div>
+        <div class="siimple-modal-body">
+            <table style="width: 100%;" id="table_timing">
+                <tr>
+                    <td><label class="siimple-label">Name: </label></td>
+                    <td><input name="name" id="name" class="siimple-input siimple-input--fluid" value="" required></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">heure: </label></td>
+                    <td>
+                        <select id="hour" name="hour" class="siimple-select">                            
+                            {% for hour in range(1,24) %}
+                            <option value="{{ hour }}">{{ '{0:02d}'.format(hour) }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="minute" name="minute" class="siimple-select">                            
+                            {% for minute in range(0,60, 5) %}
+                            <option value="{{ minute }}">{{ '{0:02d}'.format(minute) }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Monday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="monday">
+                            <label for="monday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Tuesday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="tuesday">
+                            <label for="tuesday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Wednesday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="wednesday">
+                            <label for="wednesday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Thursday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="thursday">
+                            <label for="thursday"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Friday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="friday">
+                            <label for="friday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Saturday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="saturday">
+                            <label for="saturday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Sunday</label></td>
+                    <td>
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="sunday">
+                            <label for="sunday"></label>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Add Step</label></td>
+                    <td></td>
+                    <td><div class="siimple-btn--big icon-timing-add siimple--float-right" onclick="add_timing_step()"></div></td>
+                </tr>
+            </table>
+        </div>
+        <div class="siimple-modal-footer">
+            <div class="siimple-navbar">
+                <div class="siimple--float-right">
+                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_timing()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,3 +20,9 @@ class Plugin(Blueprint):
             app.register_blueprint(Static(name="%sstatic" % self._nodename, url_prefix="/%s/" % self._nodename, path=path))
         except Exception:
             app.logger.error("init node %s on register is failed" % self._nodename)
+
+    def __eq__(self, other):
+        return self._nodename == other._nodename 
+
+    def __lt__(self, other):
+        return self._nodename < other._nodename

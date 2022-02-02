@@ -1,13 +1,13 @@
 @font-face{
     font-family:icomoon;
-    src:url(/alarm/icomoon.woff) format('woff');
+    src:url(/timing/icomoon.woff) format('woff');
     font-weight:400;
     font-style:normal
 }
 
-.icon-alarm,
-.icon-alarm-add,
-.icon-alarm-del{
+.icon-timing,
+.icon-timing-add,
+.icon-timing-del{
     font-family: icomoon;
     speak: none;
     font-style: normal;
@@ -18,14 +18,14 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.icon-alarm:before {
-    content: "\e91a"
+.icon-timing:before {
+    content: "\e950"
 }
 
-.icon-alarm-add:before {
+.icon-timing-add:before {
     content: "\ea0a"
 }
 
-.icon-alarm-del:before {
+.icon-timing-del:before {
     content: "\e9ac"
 }

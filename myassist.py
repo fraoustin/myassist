@@ -88,6 +88,7 @@ for node in [node for node in os.listdir(os.path.join(os.path.dirname(os.path.ab
     plugin = getattr(module, node.capitalize())(name=node, url_prefix="/")
     app.register_blueprint(plugin)
     app.config['PLUGINS'].append(plugin)
+app.config['PLUGINS'].sort()
 
 
 @app.route("/", methods=["GET", "POST"])
