@@ -1,13 +1,13 @@
 @font-face{
     font-family:icomoon;
-    src:url(/radio/icomoon.woff) format('woff');
+    src:url(/podcast/icomoon.woff) format('woff');
     font-weight:400;
     font-style:normal
 }
 
-.icon-radio,
-.icon-radio-add,
-.icon-radio-del{
+.icon-podcast,
+.icon-podcast-add,
+.icon-podcast-del{
     font-family: icomoon;
     speak: none;
     font-style: normal;
@@ -18,14 +18,14 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.icon-radio:before {
-    content: "\e95b"
+.icon-podcast:before {
+    content: "\ea9a"
 }
 
-.icon-radio-add:before {
+.icon-podcast-add:before {
     content: "\e908"
 }
 
-.icon-radio-del:before {
+.icon-podcast-del:before {
     content: "\e902"
 }

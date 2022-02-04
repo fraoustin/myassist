@@ -1,4 +1,5 @@
 from plugins import Plugin
+import logging
 from robot import Robot
 from db import db
 from db.models import ParamApp
@@ -38,6 +39,7 @@ def del_radio():
         except yaml.YAMLError as exc:
             print("!!!!! ERROR")
             print(exc)
+    logging.info("radio - add %s" % radio)
     return {'status': 'ok'}, 200
 
 
@@ -61,10 +63,12 @@ def add_radio():
         except yaml.YAMLError as exc:
             print("!!!!! ERROR")
             print(exc)
+    logging.info("radio - add %s" % request.form.get('name'))
     return {'status': 'ok'}, 200
 
 
 def listenradio(value, response):
+    logging.info("radio - listen %s" % response)
     Robot()._stopsound()
     Robot()._playsound(response)
 

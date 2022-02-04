@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<table id="radios" style="width:100%">
+<table id="podcasts" style="width:100%">
     <tr>
-        <td><label class="siimple-label">List of Radios</label></td>
+        <td><label class="siimple-label">List of Podcats</label></td>
         <td></td>
-        <td class="minimal"><div class="siimple-btn--big icon-radio-add siimple--float-right" onclick="add_radio()"></div></td>
+        <td class="minimal"><div class="siimple-btn--big icon-podcast-add siimple--float-right" onclick="add_podcast()"></div></td>
     </tr>
-    {% for radio in radios %}
+    {% for podcast in podcasts %}
     <tr>
-        <td>{{ radio }}</td>
-        <td>{{ radios[radio] }}</td>
-        <td><div class="siimple-btn--big icon-radio-del siimple--float-right" onclick="del_radio(this)" id="{{ radio }}"></div</td>
+        <td>{{ podcast }}</td>
+        <td>{{ podcasts[podcast] }}</td>
+        <td><div class="siimple-btn--big icon-podcast-del siimple--float-right" onclick="del_podcast(this)" id="{{ podcast }}"></div</td>
     </tr>
     {% endfor %}
     </div>
@@ -19,11 +19,11 @@
 
 
     
-<div class="siimple-modal siimple-modal--medium" id="addradio" style="display:none;">
+<div class="siimple-modal siimple-modal--medium" id="addpodcast" style="display:none;">
     <div class="siimple-modal-content">
         <div class="siimple-modal-header">
-            <div class="siimple-modal-header-title">Add Radio</div>
-            <div class="siimple-modal-header-close" onclick="close_radio()"></div>
+            <div class="siimple-modal-header-title">Add Podcast</div>
+            <div class="siimple-modal-header-close" onclick="close_podcast()"></div>
         </div>
         <div class="siimple-modal-body">
             <table style="width: 100%;">
@@ -40,7 +40,7 @@
         <div class="siimple-modal-footer">
             <div class="siimple-navbar">
                 <div class="siimple--float-right">
-                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_radio()"></div>
+                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_podcast()"></div>
                 </div>
             </div>
         </div>

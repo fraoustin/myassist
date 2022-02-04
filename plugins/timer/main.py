@@ -1,4 +1,5 @@
 from plugins import Plugin
+import logging
 from robot import Robot
 import os
 import threading
@@ -27,14 +28,39 @@ class TimerThread(threading.Thread):
     def run(self):
         global END_TIMER
         time.sleep(self.timer)
+        logging.info("timer - end timer for %s second" % self.timer)
         self.robot.emit_event("", "say:%s" % END_TIMER)
         self.robot._stopsound()
         self.robot._playsound(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "timer.mp3"))
 
+
+class TimerSleepThread(threading.Thread):
+
+    def __init__(self, timer):
+        threading.Thread.__init__(self)
+        self.robot = Robot()
+        self.timer = timer * 60
+
+    def run(self):
+        global END_TIMER
+        time.sleep(self.timer)
+        logging.info("timer - end timer sleep for %s second" % self.timer)
+        self.robot.emit_event("", "volume_mute")
+
+
 def timer(value, response):
     global RESPONSE_TIMER
     global MINUTE_TIMER
+    logging.info("timer - run timer for %s second" % response)
     th = TimerThread(int(response))
+    th.start()
+    Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
+
+def sleep(value, response):
+    global RESPONSE_TIMER
+    global MINUTE_TIMER
+    logging.info("timer - run timer sleep for %s second" % response)
+    th = TimerSleepThread(int(response))
     th.start()
     Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
 
@@ -43,6 +69,7 @@ class Timer(Plugin):
     def __init__(self, *args, **kw):
         Plugin.__init__(self, icon=False, *args, **kw)
         Robot().add_event("timer", timer)
+        Robot().add_event("sleep", sleep)
     
     def init_db(self):
         lang = ParamApp.getValue("basic_langue")
@@ -63,6 +90,11 @@ class Timer(Plugin):
                                 Robot().training(answer + " " + num2words(numberh, lang=lang) + " " + unitys[lang][0] + " " + num2words(numberm, lang=lang), "%s:%s" % (response, 60*numberh+numberm))
                                 Robot().training(answer + " " + str(numberh) + " " + unitys[lang][0] + " " + str(numberm), "%s:%s" % (response, 60*numberh+numberm))
                                 Robot().training(answer + " " + str(numberh) + " " + str(numberm), "%s:%s" % (response, 60*numberh+numberm))
+                conversion = doc['chatbot']['sleep']
+                for answer in conversion['answers']:
+                    for response in conversion['responses']:
+                        for number in range(1, 99):
+                            Robot().training(answer + " " + num2words(number, lang=lang) + " " + unitys[lang][1], "%s:%s" % (response, number))
                 global RESPONSE_TIMER
                 RESPONSE_TIMER = doc['chatbot']['response']['responses'][0]
                 global END_TIMER

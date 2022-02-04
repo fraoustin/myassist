@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from plugins import Plugin
 from robot import Robot
 import yaml
+import logging
 
 __version__ = "0.0.1"
 
@@ -29,7 +30,8 @@ def historic():
 
 
 def saychat(value, response):
-    HISTORIC_SAYS.append({'epoch': int(time.time()), 'response': response, 'query': value})
+    logging.info("chat - %s" % response)
+    HISTORIC_SAYS.append({'epoch': int(time.time()*10000), 'response': response, 'query': value})
     if len(HISTORIC_SAYS) > 10:
         del HISTORIC_SAYS[0:len(HISTORIC_SAYS)-10]
 

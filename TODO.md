@@ -7,6 +7,7 @@
 - jouer une playlist
 - gestion des mails, agenda
 - ajout alarme (module schedule https://github.com/dbader/schedule)
+- optimisation recherche concordance (Thread ? voir le temps de recherche)
 
 
 apt-get install gir1.2-gst-rtsp-server-1.0

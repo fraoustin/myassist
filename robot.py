@@ -1,5 +1,6 @@
 from queue import Queue
 import threading
+import logging
 from difflib import SequenceMatcher
 import gtts
 import time
@@ -11,6 +12,33 @@ from urllib.request import pathname2url
 from gi.repository import Gst
 import gi
 gi.require_version('Gst', '1.0')
+
+
+class RobotHandler(logging.Handler):
+    
+    def __init__(self):
+        logging.Handler.__init__(self)
+        self._logs = []
+    
+    def clear(self):
+        del self._logs[:]
+    
+    @property
+    def logs(self):
+        return self._logs
+
+    def emit(self, record):
+        self._logs.insert(0, record)
+        del self._logs[500:]
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+ch = RobotHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 def similar(a, b):
@@ -65,6 +93,16 @@ class Event(object):
         [obs(*args, **kw) for obs in self._obss]
 
 
+def logtime(func):
+    def decorateur(*args, **kwargs):
+        start = time.time()
+        resultat = func(*args, **kwargs)
+        end = time.time()
+        logging.debug("treatment %s : %s  with param %s %s" % (func.__name__, end - start, str(args), str(kwargs)))
+        return resultat
+    return decorateur
+
+
 class Robot(metaclass=Singleton):
 
     def __init__(self, name, level=0.9):
@@ -76,6 +114,7 @@ class Robot(metaclass=Singleton):
         self._playbin = None
         Gst.init(None)
 
+    @logtime
     def training(self, answer, response):
         self._responses.append({"answer": answer, "response": response})
 
@@ -83,13 +122,16 @@ class Robot(metaclass=Singleton):
         if {"answer": answer, "response": response} in self._responses:
             self._responses.remove({"answer": answer, "response": response})
 
+    @logtime
     def add_event(self, name, obs):
         if name not in [event.name for event in self._events]:
             self._events.append(Event(name))
         [event for event in self._events if event.name == name][0] += obs
 
+    @logtime
     def emit_event(self, value, response):
         if response.split(":")[0] in [event.name for event in self._events]:
+            logging.info("robot - emit %s" % response)
             [event for event in self._events if event.name == response.split(":")[0]][0](value, ":".join(response.split(":")[1:]))
 
     def query(self, value):
@@ -99,6 +141,7 @@ class Robot(metaclass=Singleton):
             self._thread = QueryThread()
             self._thread.start()
 
+    @logtime
     def _query(self, value):
         best_match = {"level": 0, "response": []}
         for response in self._responses:
@@ -110,7 +153,7 @@ class Robot(metaclass=Singleton):
         if best_match["level"] >= self._level:
             response = random.choice(best_match["response"])
         else:
-            print(best_match["level"], best_match["response"][0])
+            print(value, best_match["level"], best_match["response"][0])
             response = "notfound"
         self.emit_event(value, response)
 
@@ -120,6 +163,7 @@ class Robot(metaclass=Singleton):
         except Exception:
             pass
 
+    @logtime
     def _playsound(self, url):
         self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
         if url.startswith(('http://', 'https://')):
@@ -131,6 +175,7 @@ class Robot(metaclass=Singleton):
             self._playbin.props.uri = 'file://' + pathname2url(path)
         self._playbin.set_state(Gst.State.PLAYING)
 
+    @logtime
     def speak(self, words):
         with tempfile.TemporaryDirectory() as tmpdirname:
             tts = gtts.gTTS(words, lang="fr")

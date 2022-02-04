@@ -104,3 +104,16 @@ document.getElementById("search").addEventListener("input", function(){searchAdv
 
 // ***************************************************** //
 //                  specific myassist                    //
+
+function del_log(){
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            location.reload();
+        };
+    };
+    var theUrl = "/api/logs/clear";
+    xmlhttp.open("GET", theUrl);
+    xmlhttp.send();
+
+}

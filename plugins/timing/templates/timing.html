@@ -5,12 +5,19 @@
     <tr>
         <td><label class="siimple-label">Timing</label></td>
         <td></td>
+        <td class="hidden"></td>
         <td class="minimal"><div class="siimple-btn--big icon-timing-add siimple--float-right" onclick="add_timing()"></div></td>
     </tr>
     {% for timing in timings %}
     <tr>
-        <td>{{ timing["name"] }}</td>
-        <td></td>
+        <td style="width: 50px;" >
+            <div class="siimple-switch">
+                <input type="checkbox" id="{{ timing['name'] }}" {% if timing['active'] %}checked{% endif %}  onclick="change_timing(this)">
+                <label for="{{ timing['name'] }}"></label>
+            </div>
+        </td>
+        <td onclick="view_timing(this)">{{ timing["name"] }}</td>
+        <td class="hidden">{{ json.dumps(timing) }}</td>
         <td><div class="siimple-btn--big icon-timing-del siimple--float-right" onclick="del_timing(this)" id="{{ timing['name'] }}"></div</td>
     </tr>
     {% endfor %}
@@ -30,6 +37,16 @@
                 <tr>
                     <td><label class="siimple-label">Name: </label></td>
                     <td><input name="name" id="name" class="siimple-input siimple-input--fluid" value="" required></td>
+                    <td style="text-align: end;">
+                        <div class="siimple-switch">
+                            <input type="checkbox" id="active">
+                            <label for="active"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hidden">
+                    <td><label class="siimple-label">Name: </label></td>
+                    <td><input name="oldname" id="oldname" class="siimple-input siimple-input--fluid" value="" required></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -37,12 +54,12 @@
                     <td>
                         <select id="hour" name="hour" class="siimple-select">                            
                             {% for hour in range(1,24) %}
-                            <option value="{{ hour }}">{{ '{0:02d}'.format(hour) }}</option>
+                            <option value="{{ '{0:02d}'.format(hour) }}">{{ '{0:02d}'.format(hour) }}</option>
                             {% endfor %}
                         </select>
                         <select id="minute" name="minute" class="siimple-select">                            
                             {% for minute in range(0,60, 5) %}
-                            <option value="{{ minute }}">{{ '{0:02d}'.format(minute) }}</option>
+                            <option value="{{ '{0:02d}'.format(minute) }}">{{ '{0:02d}'.format(minute) }}</option>
                             {% endfor %}
                         </select>
                     </td>
@@ -86,6 +103,7 @@
                             <label for="thursday"></label>
                         </div>
                     </td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td><label class="siimple-label">Friday</label></td>

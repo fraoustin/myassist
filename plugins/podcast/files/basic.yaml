@@ -1,0 +1,12 @@
+chatbot:
+    podcast:
+        answers:
+            - joue
+            - lance
+            - joue podcast
+            - lance podcast
+        stop:
+            - stop
+            - arrête
+            - stop podcast
+            - arrête podcast

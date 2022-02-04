@@ -22,6 +22,7 @@
             <div id="menu-bottom">
             {% if current_user.isadmin %}
                 {% block navbarbottom %}
+                <a class="siimple-menu-item" href="/logs"><div class="siimple-btn--big icon-meter" title="logs"></div></a>
                 <a class="siimple-menu-item" href="/authorizations"><div class="siimple-btn--big icon-shield" title="authorizations"></div></a>
                 <a class="siimple-menu-item" href="/users"><div class="siimple-btn--big icon-users" title="users"></div></a>
                 <a class="siimple-menu-item" href="/settings"><div class="siimple-btn--big icon-param"  title="settings"></div></a>

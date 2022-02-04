@@ -6,6 +6,12 @@ chatbot:
             - minuterie
         responses:
             - timer
+    sleep:
+        answers:
+            - silence dans
+            - mute dans
+        responses:
+            - sleep
     response:
         responses:
             - minuterie lancer pour

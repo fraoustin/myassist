@@ -20,7 +20,8 @@
 .icon-shield,
 .icon-users,
 .icon-run,
-.icon-robot{
+.icon-robot,
+.icon-meter{
     font-family: icomoon;
     speak: none;
     font-style: normal;
@@ -85,4 +86,8 @@
 
 .icon-robot:before {
     content: "\eac6"
+}
+
+.icon-meter:before {
+    content: "\e9a6"
 }

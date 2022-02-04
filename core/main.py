@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, current_app
 from flask_login import login_required, current_user
 from db.models import ParamApp
 from db import db
+import logging
+from robot import RobotHandler
 
 __version__ = '0.1.0'
 
@@ -11,10 +13,27 @@ def core():
     return render_template('core.html', user=current_user, plugins=current_app.config['PLUGINS'])
 
 
+@login_required
+def logs():
+    logger = logging.getLogger()
+    handler = [handler for handler in logger.handlers if isinstance(handler, RobotHandler) is True][0]
+    return render_template('logs.html', user=current_user, plugins=current_app.config['PLUGINS'], logs=handler.logs, handler=handler)
+
+
+@login_required
+def clear():
+    logger = logging.getLogger()
+    handler = [handler for handler in logger.handlers if isinstance(handler, RobotHandler) is True][0]
+    handler.clear()
+    return {'status': 'ok'}, 200
+
+
 class Core(Blueprint):
     def __init__(self, name='core', import_name=__name__, *args, **kwargs):
         Blueprint.__init__(self, name, import_name, template_folder='templates', *args, **kwargs)
         self.add_url_rule('/', 'core', core, methods=['GET'])
+        self.add_url_rule('/logs', 'logs', logs, methods=['GET'])
+        self.add_url_rule('/api/logs/clear', 'logs clear', clear, methods=['GET'])
 
     def register(self, app, options):
         try:

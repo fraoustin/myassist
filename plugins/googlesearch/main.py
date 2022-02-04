@@ -1,9 +1,10 @@
 from plugins import Plugin
-from robot import Robot
+from robot import Robot, logtime
 from bs4 import BeautifulSoup
 from requests import get
 from db import db
 from db.models import ParamApp
+import logging
 
 __version__ = "0.0.1"
 
@@ -49,14 +50,20 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
                 for elt in data.find_all("div", attrs={'class': 'vmod'})[0].find_all("div", attrs={'class': 'thODed'}):
                     response.append(elt.getText(separator=u' '))
                 return ' '.join(response)
+        if len(soup.find_all("div", attrs={'class': 'rllt__details'})) > 0:
+            response = []
+            for elt in soup.find_all("div", attrs={'class': 'rllt__details'})[0].find_all("div"):
+                response.append(elt.getText(separator=u' '))
+            return ' '.join(response)
         return notfound
 
     html = fetch_results(term, num_results, lang)
     return parse_results(html)
 
-
+@logtime
 def googlesearch(value, response):
     response = search(value, lang=ParamApp.getValue("basic_langue"))
+    logging.info("googlesearch - %s -> %s" % (value, response))
     if response == 'notfound':
         Robot().query(response)
     else:

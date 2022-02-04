@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div id="logs" class="content-center" style="width: 100%">
+  <div class="siimple--float-left siimple-h2">Logs</div>
+  <div class="siimple--float-right"><a class="siimple-menu-item"><div class="siimple-btn--big icon-del"  onclick="del_log()"></div></a></div>
+  <div class="search icon-search"><input id="search" type="text" class="siimple-input"></div>
+  <div id = "table" class="siimple-table">
+    <div class="siimple-table-header">
+        <div class="siimple-table-row">
+            <div class="siimple-table-cell">message</div>
+        </div>
+    </div>
+    <div class="siimple-table-body">
+        {% for record in logs %}
+        {% if record.levelname == "INFO" %}
+        <div class="siimple-table-row siimple--color-primary">
+        {% elif record.levelname == "DEBUG" %}
+        <div class="siimple-table-row siimple--color-success">
+        {% elif record.levelname == "WARNING" %}
+        <div class="siimple-table-row siimple--color-warning">
+        {% elif record.levelname == "ALERT" %}
+        <div class="siimple-table-row siimple--color-error">
+        {% elif record.levelname == "ALERT" %}
+        <div class="siimple-table-row siimple--color-error">
+        {% else %}
+        <div class="siimple-table-row">
+        {% endif %}
+            <div class="siimple-table-cell">{{ handler.format(record) }}</div>
+        </div>
+        {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
