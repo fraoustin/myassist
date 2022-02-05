@@ -9,20 +9,21 @@ import os
 import random
 from os.path import abspath, exists
 from urllib.request import pathname2url
+import speech_recognition as sr
 from gi.repository import Gst
 import gi
 gi.require_version('Gst', '1.0')
 
 
 class RobotHandler(logging.Handler):
-    
+
     def __init__(self):
         logging.Handler.__init__(self)
         self._logs = []
-    
+
     def clear(self):
         del self._logs[:]
-    
+
     @property
     def logs(self):
         return self._logs
@@ -103,20 +104,61 @@ def logtime(func):
     return decorateur
 
 
+class Mic(threading.Thread):
+
+    def __init__(self, robot):
+        threading.Thread.__init__(self)
+        self.robot = robot
+        self.langue = "fr-FR"
+        self._index_mic = 0
+
+    def run(self):
+        self._stop = False
+        recognize = sr.Recognizer()
+        mic = sr.Microphone(device_index=self._index_mic)
+        with mic as source:
+            recognize.adjust_for_ambient_noise(source)
+            while self._stop is False:
+                audio = recognize.listen(source)
+                try:
+                    data = recognize.recognize_google(audio, language=self.langue)
+                    print(data)
+                    if self.robot.name in data:
+                        data = data[data.index(self.robot.name)+len(self.robot.name):]
+                    self.robot.query(data.upper())
+                except Exception:
+                    pass
+
+    def stop(self):
+        self._stop = False
+
+    @property
+    def index_mic(self):
+        return self._index_mic
+
+    @index_mic.setter
+    def index_mic(self, value):
+        self.stop()
+        self._index_mic = value
+        self.start()
+
+
 class Robot(metaclass=Singleton):
 
     def __init__(self, name, level=0.9):
+        self.name = name
         self._level = level
         self._events = []
         self._responses = []
         self._queue = Queue()
         self._thread = None
         self._playbin = None
+        self.mic = Mic(self)
         Gst.init(None)
 
     @logtime
     def training(self, answer, response):
-        self._responses.append({"answer": answer, "response": response})
+        self._responses.append({"answer": answer.upper(), "response": response})
 
     def remove_training(self, answer, response):
         if {"answer": answer, "response": response} in self._responses:

@@ -39,7 +39,7 @@ def del_radio():
         except yaml.YAMLError as exc:
             print("!!!!! ERROR")
             print(exc)
-    logging.info("radio - add %s" % radio)
+    logging.info("radio - del %s" % radio)
     return {'status': 'ok'}, 200
 
 

@@ -12,3 +12,4 @@
 
 apt-get install gir1.2-gst-rtsp-server-1.0
 apt-get install libpulse0
+apt-get install python3-pyaudio

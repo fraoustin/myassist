@@ -9,8 +9,10 @@ __version__ = '0.1.0'
 
 PARAMS = []
 
+
 def get_params():
     return [param for param in ParamApp.all(sortby=ParamApp.key) if param.key.startswith("basic_")]
+
 
 @login_required
 @checkAdmin()

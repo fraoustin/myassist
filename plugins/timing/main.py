@@ -5,9 +5,7 @@ from db.models import ParamApp
 import json
 import threading
 import logging
-import os
 import time
-import yaml
 from flask import current_app, render_template, request
 from flask_login import login_required, current_user
 import schedule
@@ -37,11 +35,11 @@ class TimingThread(threading.Thread, metaclass=Singleton):
         while self.stop is False:
             self._scheduler.run_pending()
             time.sleep(1)
-    
+
     def clear(self):
         logging.info("timing - clear schedule")
         self._scheduler.clear()
-    
+
     def add_job(self, day, timer, job):
         self._weekdays[day].at(timer).do(job)
 
@@ -55,7 +53,7 @@ def timing():
 def del_timing():
     timings = json.loads(ParamApp.getValue("timing"))
     timingdel = request.form.get('timing')
-    timings = [ tim for tim in timings if tim["name"] != timingdel]
+    timings = [tim for tim in timings if tim["name"] != timingdel]
     paramtiming = ParamApp.get("timing")
     paramtiming.value = json.dumps(timings)
     paramtiming.save()
@@ -68,7 +66,7 @@ def del_timing():
 def add_timing():
     timings = json.loads(ParamApp.getValue("timing"))
     name = json.loads(request.form.get('timing'))["oldname"]
-    timings = [ tim for tim in timings if tim["name"] != name]
+    timings = [tim for tim in timings if tim["name"] != name]
     timings.append(json.loads(request.form.get('timing')))
     paramtiming = ParamApp.get("timing")
     paramtiming.value = json.dumps(timings)
@@ -86,11 +84,12 @@ def fcttiming(steps):
             time.sleep(1)
     return fct
 
+
 def settiming(params):
     TimingThread().clear()
     for param in params:
         for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
-            if param[day] == True:
+            if param[day] is True:
                 logging.debug("timing - add schedule %s %s:%s %s" % (day, param['hour'], param['minute'], param['steps']))
                 TimingThread().add_job(day, "%s:%s" % (param['hour'], param['minute']), fcttiming(param['steps']))
 

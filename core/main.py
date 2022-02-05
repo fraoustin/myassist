@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from db.models import ParamApp
 from db import db
 import logging
-from robot import RobotHandler
+from robot import RobotHandler, Robot
 
 __version__ = '0.1.0'
 
@@ -45,3 +45,15 @@ class Core(Blueprint):
         if ParamApp.get("basic_langue") is None:
             db.session.add(ParamApp(key="basic_langue", value="fr"))
             db.session.commit()
+        if ParamApp.get("basic_name") is None:
+            db.session.add(ParamApp(key="basic_name", value="Jarvis"))
+            db.session.commit()
+        if ParamApp.get("basic_langue mic") is None:
+            db.session.add(ParamApp(key="basic_langue mic", value="fr-FR"))
+            db.session.commit()
+        if ParamApp.get("basic_langue index mic") is None:
+            db.session.add(ParamApp(key="basic_langue index mic", value="0"))
+            db.session.commit()
+        Robot().name = ParamApp.getValue("basic_name")
+        Robot().mic.lang = ParamApp.getValue("basic_langue mic")
+        Robot().mic.index_mic = int(ParamApp.getValue("basic_langue index mic"))

@@ -1,0 +1,13 @@
+chatbot:
+    gmail:
+        answers:
+            - ai je des mails
+            - mails
+            - j'ai des mails
+        response:
+            - vous avez [counter] emails
+    calendar:
+        answers:
+            - calendrier
+            - aujourd'hui
+            - ma journée

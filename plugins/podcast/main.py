@@ -40,7 +40,7 @@ def del_podcast():
         except yaml.YAMLError as exc:
             print("!!!!! ERROR")
             print(exc)
-    logging.info("podcast - add %s" % podcast)
+    logging.info("podcast - del %s" % podcast)
     return {'status': 'ok'}, 200
 
 

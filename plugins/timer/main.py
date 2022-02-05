@@ -6,12 +6,11 @@ import threading
 import time
 import yaml
 from num2words import num2words
-from db import db
 from db.models import ParamApp
 
 __version__ = "0.0.1"
 
-unitys = {'en':['hour', 'minute'], 'fr':['heure', 'minute']}
+unitys = {'en': ['hour', 'minute'], 'fr': ['heure', 'minute']}
 
 RESPONSE_TIMER = "timer load for"
 END_TIMER = "end timer"
@@ -56,6 +55,7 @@ def timer(value, response):
     th.start()
     Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
 
+
 def sleep(value, response):
     global RESPONSE_TIMER
     global MINUTE_TIMER
@@ -66,11 +66,12 @@ def sleep(value, response):
 
 
 class Timer(Plugin):
+
     def __init__(self, *args, **kw):
         Plugin.__init__(self, icon=False, *args, **kw)
         Robot().add_event("timer", timer)
         Robot().add_event("sleep", sleep)
-    
+
     def init_db(self):
         lang = ParamApp.getValue("basic_langue")
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "basic.yaml"), "r") as stream:

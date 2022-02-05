@@ -2,7 +2,6 @@ from plugins import Plugin
 from robot import Robot, logtime
 from bs4 import BeautifulSoup
 from requests import get
-from db import db
 from db.models import ParamApp
 import logging
 
@@ -59,6 +58,7 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
 
     html = fetch_results(term, num_results, lang)
     return parse_results(html)
+
 
 @logtime
 def googlesearch(value, response):
