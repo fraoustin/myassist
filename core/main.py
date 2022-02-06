@@ -42,7 +42,6 @@ class Core(Blueprint):
             app.logger.error("init core on register is failed")
 
     def init_db(self):
-        print("update param")
         if ParamApp.get("basic_langue") is None:
             db.session.add(ParamApp(key="basic_langue", value="fr"))
             db.session.commit()

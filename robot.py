@@ -37,6 +37,8 @@ class RobotHandler(logging.Handler):
     def emit(self, record):
         self._logs.insert(0, record)
         del self._logs[5000:]
+        if record.levelname != "DEBUG":
+            print(self.format(record))
 
 
 logger = logging.getLogger()
@@ -126,6 +128,7 @@ class Mic(threading.Thread):
         self._langue = "fr-FR"
         self._operator = self.operator.get(self.langue, {})
         self._index_mic = 0
+        self.start()
 
     def run(self):
         self._stop = False
@@ -139,14 +142,6 @@ class Mic(threading.Thread):
                     data = recognize.recognize_google(audio, language=self.langue)
                     logging.debug("recognize - %s" % data)
                     if self.robot.name in data:
-                        words = []
-                        for word in data.split(" "):
-                            try:
-                                words.append(num2words(word, lang=self.langue.split('-')[0]))
-                            except Exception:
-                                words.append(word)
-                        words = [self._operator[word] if word in self._operator else word for word in words]
-                        data = ' '.join(words)
                         data = data[data.index(self.robot.name)+len(self.robot.name):]
                         logging.debug("recognize query - %s" % data)
                         self.robot.query(data.strip())
