@@ -3,11 +3,14 @@ chatbot:
         answers:
             - monte le son
             - augmente le son
+            - monte le volume
+            - augmente le volume
         responses:
             - volume_up
     volume_down:
         answers:
             - baisse le son
+            - baisse le volume
             - c'est trop fort
         responses:
             - volume_down

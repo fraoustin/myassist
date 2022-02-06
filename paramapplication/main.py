@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for
 from flask_login import login_required
 from auth import checkAdmin
+from core.main import Core
 
 from db import db
 from db.models import ParamApp
@@ -33,9 +34,9 @@ def view():
 @checkAdmin()
 def update():
     for paramregister in get_params():
-        print(paramregister.key, request.form.get(paramregister.key, ''))
         paramregister.value = request.form.get(paramregister.key, '')
         paramregister.save()
+    [current_app.blueprints[blueprint] for blueprint in current_app.blueprints if isinstance(current_app.blueprints[blueprint], Core)][0].init_db()
     return redirect(url_for('paramapplication.view'))
 
 

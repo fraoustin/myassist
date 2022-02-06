@@ -6,3 +6,4 @@ chatbot:
         stop:
             - stop
             - arrête
+            - silence

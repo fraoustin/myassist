@@ -11,16 +11,16 @@ __version__ = "0.0.1"
 
 def get_volume():
     with Pulse() as pulse:
-        sink_input = pulse.sink_input_list()[0]
-        return sink_input.volume.value_flat
+        sink = pulse.sink_list()[0]
+        return sink.volume.value_flat
 
 
 def set_volume(value):
     with Pulse() as pulse:
-        sink_input = pulse.sink_input_list()[0]
-        n_channels = len(sink_input.volume.values)
-        new_volume = PulseVolumeInfo(value, n_channels)
-        pulse.volume_set(sink_input, new_volume)
+        sink = pulse.sink_list()[0]
+        n_channels = len(sink.volume.values)
+        new_volume = PulseVolumeInfo(0.9, n_channels)
+        pulse.volume_set(sink, new_volume)
 
 
 def volume_up(value, response):

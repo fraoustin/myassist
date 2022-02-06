@@ -10,9 +10,15 @@ import random
 from os.path import abspath, exists
 from urllib.request import pathname2url
 import speech_recognition as sr
-from gi.repository import Gst
-import gi
-gi.require_version('Gst', '1.0')
+from num2words import num2words
+try:
+    import mpv
+    MPV = True
+except Exception:
+    from gi.repository import Gst
+    import gi
+    gi.require_version('Gst', '1.0')
+    MPV = False
 
 
 class RobotHandler(logging.Handler):
@@ -30,7 +36,7 @@ class RobotHandler(logging.Handler):
 
     def emit(self, record):
         self._logs.insert(0, record)
-        del self._logs[500:]
+        del self._logs[5000:]
 
 
 logger = logging.getLogger()
@@ -106,10 +112,19 @@ def logtime(func):
 
 class Mic(threading.Thread):
 
+    operator = {
+        "fr-FR":
+            {"+": "plus",
+            "-": "moins",
+            "x": "fois",
+            "/": "diviser"}
+    }
+
     def __init__(self, robot):
         threading.Thread.__init__(self)
         self.robot = robot
-        self.langue = "fr-FR"
+        self._langue = "fr-FR"
+        self._operator = self.operator.get(self.langue, {})
         self._index_mic = 0
 
     def run(self):
@@ -122,15 +137,25 @@ class Mic(threading.Thread):
                 audio = recognize.listen(source)
                 try:
                     data = recognize.recognize_google(audio, language=self.langue)
-                    print(data)
+                    logging.debug("recognize - %s" % data)
                     if self.robot.name in data:
+                        words = []
+                        for word in data.split(" "):
+                            try:
+                                words.append(num2words(word, lang=self.langue.split('-')[0]))
+                            except Exception:
+                                words.append(word)
+                        words = [self._operator[word] if word in self._operator else word for word in words]
+                        data = ' '.join(words)
                         data = data[data.index(self.robot.name)+len(self.robot.name):]
-                    self.robot.query(data.upper())
+                        logging.debug("recognize query - %s" % data)
+                        self.robot.query(data.strip())
                 except Exception:
                     pass
+            self._isrun = False
 
     def stop(self):
-        self._stop = False
+        self._stop = True
 
     @property
     def index_mic(self):
@@ -138,9 +163,16 @@ class Mic(threading.Thread):
 
     @index_mic.setter
     def index_mic(self, value):
-        self.stop()
         self._index_mic = value
-        self.start()
+
+    @property
+    def langue(self):
+        return self._langue
+
+    @langue.setter
+    def langue(self, value):
+        self._langue = value
+        self._operator = self.operator.get(self.langue, {})
 
 
 class Robot(metaclass=Singleton):
@@ -154,11 +186,21 @@ class Robot(metaclass=Singleton):
         self._thread = None
         self._playbin = None
         self.mic = Mic(self)
-        Gst.init(None)
+        global MPV
+        if MPV is False:
+            print("module speak GST")
+            Gst.init(None)
+            self._playsound = self._playsound_gst
+            self._stopsound = self._stopsound_gst
+        else:
+            print("module speak MPV")
+            self._playsound = self._playsound_mpv
+            self._stopsound = self._stopsound_mpv
 
     @logtime
     def training(self, answer, response):
-        self._responses.append({"answer": answer.upper(), "response": response})
+        answer.strip()
+        self._responses.append({"answer": answer, "response": response})
 
     def remove_training(self, answer, response):
         if {"answer": answer, "response": response} in self._responses:
@@ -177,11 +219,11 @@ class Robot(metaclass=Singleton):
             [event for event in self._events if event.name == response.split(":")[0]][0](value, ":".join(response.split(":")[1:]))
 
     def query(self, value):
-        if len(value) > 0:
-            self._queue.put(value)
         if self._thread is None:
             self._thread = QueryThread()
             self._thread.start()
+        if len(value) > 0:
+            self._queue.put(value)
 
     @logtime
     def _query(self, value):
@@ -195,18 +237,16 @@ class Robot(metaclass=Singleton):
         if best_match["level"] >= self._level:
             response = random.choice(best_match["response"])
         else:
-            print(value, best_match["level"], best_match["response"][0])
             response = "notfound"
         self.emit_event(value, response)
 
-    def _stopsound(self, *args):
+    def _stopsound_gst(self, *args):
         try:
             self._playbin.set_state(Gst.State.READY)
         except Exception:
             pass
 
-    @logtime
-    def _playsound(self, url):
+    def _playsound_gst(self, url):
         self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
         if url.startswith(('http://', 'https://')):
             self._playbin.props.uri = url
@@ -217,10 +257,19 @@ class Robot(metaclass=Singleton):
             self._playbin.props.uri = 'file://' + pathname2url(path)
         self._playbin.set_state(Gst.State.PLAYING)
 
+    def _stopsound_mpv(self, *args):
+        try:
+            self._playbin.stop()
+        except Exception:
+            pass
+
+    def _playsound_mpv(self, url):
+        self._playbin = mpv.MPV(ytdl=True)
+        self._playbin.play(url)
+
     @logtime
     def speak(self, words):
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            tts = gtts.gTTS(words, lang="fr")
-            path = os.path.join(tmpdirname, "%s.mp3" % int(time.time()))
-            tts.save(path)
-            self._playsound(path)
+        tts = gtts.gTTS(words, lang="fr")
+        path = os.path.join(tempfile.gettempdir(), "%s.mp3" % int(time.time()))
+        tts.save(path)
+        self._playsound(path)

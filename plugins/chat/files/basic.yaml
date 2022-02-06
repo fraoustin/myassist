@@ -55,3 +55,8 @@ chatbot:
             - oui
         responses:
             - ""
+    jokes:
+        answers:
+            - qui est le plus beau
+        responses:
+            - c'est frederic

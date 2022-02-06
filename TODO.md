@@ -13,3 +13,8 @@
 apt-get install gir1.2-gst-rtsp-server-1.0
 apt-get install libpulse0
 apt-get install python3-pyaudio
+
+
+apt-get install mpv libmpv1
+
+python-mpv>=0.5.2
