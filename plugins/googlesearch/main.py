@@ -10,12 +10,10 @@ __version__ = "0.0.1"
 
 
 def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
-    usr_agent = {
-        'User-Agent':  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36'}
+    usr_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36'}
 
     def fetch_results(search_term, number_results, language_code):
-        escaped_search_term = urllib.parse.quote(search_term)#search_term.replace('+', '%2B').replace(' ', '+')
-
+        escaped_search_term = urllib.parse.quote(search_term)
         google_url = 'https://www.google.com/search?q={}&num={}&hl={}'.format(escaped_search_term, number_results+1,
                                                                               language_code)
         proxies = None
@@ -31,7 +29,6 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
         return response.text
 
     def parse_results(raw_html):
-        with open('test.txt', 'a') as f: f.write(raw_html)
         soup = BeautifulSoup(raw_html, 'html.parser')
         data = soup.find(id='rso').find_all('div')[0]
         if len(data.find_all('span', attrs={'id': 'cwos'})) > 0:
@@ -57,6 +54,8 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
             return ' '.join(response)
         if len(data.find_all('div', attrs={'id': 'NotFQb'})) > 0:
             return data.find('div', attrs={'id': 'NotFQb'}).find('input')['value']
+        if len(data.find_all('div', attrs={'class': 'gws-csf-randomnumber__result'})) > 0:
+            return data.find('div', attrs={'class': 'gws-csf-randomnumber__result'}).getText(separator=u' ')            
         return notfound
 
     html = fetch_results(term, num_results, lang)

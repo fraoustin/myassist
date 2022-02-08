@@ -1,13 +1,13 @@
 
 ## TODO
 
-- similarity as parameter
-- name of robot as parameter
-- manage multi langue
 - jouer une playlist
-- gestion des mails, agenda
-- ajout alarme (module schedule https://github.com/dbader/schedule)
-- optimisation recherche concordance (Thread ? voir le temps de recherche)
+- ajouter dans "x minutes"
+- ajouter dans "le bureau"
+- gestion calendrier full web -> voir l'utilisation des notifications mails
+- jouer aux échec
+- avoir le temps restant de la minuterie
+- gérer et ajouter des tâches
 
 
 apt-get install gir1.2-gst-rtsp-server-1.0

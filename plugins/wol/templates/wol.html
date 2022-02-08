@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<table id="wols" style="width:100%">
+    <tr>
+        <td><label class="siimple-label">Wake On Lan</label></td>
+        <td></td>
+        <td class="minimal"><div class="siimple-btn--big icon-wol-add siimple--float-right" onclick="add_wol()"></div></td>
+    </tr>
+    {% for wol in wols %}
+    <tr>
+        <td>{{ wol }}</td>
+        <td>{{ wols[wol] }}</td>
+        <td><div class="siimple-btn--big icon-wol-del siimple--float-right" onclick="del_wol(this)" id="{{ wol }}"></div</td>
+    </tr>
+    {% endfor %}
+    </div>
+</table>
+
+
+    
+<div class="siimple-modal siimple-modal--medium" id="addwol" style="display:none;">
+    <div class="siimple-modal-content">
+        <div class="siimple-modal-header">
+            <div class="siimple-modal-header-title">Add computer</div>
+            <div class="siimple-modal-header-close" onclick="close_wol()"></div>
+        </div>
+        <div class="siimple-modal-body">
+            <table style="width: 100%;">
+                <tr>
+                    <td><label class="siimple-label">Name: </label></td>
+                    <td><input name="name" id="name" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">Mac address: </label></td>
+                    <td><input name="url" id="url" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+            </table>
+        </div>
+        <div class="siimple-modal-footer">
+            <div class="siimple-navbar">
+                <div class="siimple--float-right">
+                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_wol()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

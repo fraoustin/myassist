@@ -54,6 +54,14 @@ class Core(Blueprint):
         if ParamApp.get("basic_langue index mic") is None:
             db.session.add(ParamApp(key="basic_langue index mic", value="0"))
             db.session.commit()
+        if ParamApp.get("basic_similarity level") is None:
+            db.session.add(ParamApp(key="basic_similarity level", value="0.9"))
+            db.session.commit()
+        if ParamApp.get("basic_and operator") is None:
+            db.session.add(ParamApp(key="basic_and operator", value="et"))
+            db.session.commit()
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_langue mic")
         Robot().mic.index_mic = int(ParamApp.getValue("basic_langue index mic"))
+        Robot().level = ParamApp.getValue("basic_similarity level")
+        Robot().andoperator = ParamApp.getValue("basic_and operator")

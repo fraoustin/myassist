@@ -10,7 +10,6 @@ import random
 from os.path import abspath, exists
 from urllib.request import pathname2url
 import speech_recognition as sr
-from num2words import num2words
 try:
     import mpv
     MPV = True
@@ -126,7 +125,6 @@ class Mic(threading.Thread):
         threading.Thread.__init__(self)
         self.robot = robot
         self._langue = "fr-FR"
-        self._operator = self.operator.get(self.langue, {})
         self._index_mic = 0
         self.start()
 
@@ -167,12 +165,11 @@ class Mic(threading.Thread):
     @langue.setter
     def langue(self, value):
         self._langue = value
-        self._operator = self.operator.get(self.langue, {})
 
 
 class Robot(metaclass=Singleton):
 
-    def __init__(self, name, level=0.9):
+    def __init__(self, name, level=0.9, andoperator='et'):
         self.name = name
         self._level = level
         self._events = []
@@ -181,6 +178,7 @@ class Robot(metaclass=Singleton):
         self._thread = None
         self._playbin = None
         self.mic = Mic(self)
+        self.andoperator = andoperator
         global MPV
         if MPV is False:
             print("module speak GST")
@@ -191,6 +189,14 @@ class Robot(metaclass=Singleton):
             print("module speak MPV")
             self._playsound = self._playsound_mpv
             self._stopsound = self._stopsound_mpv
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, value):
+        self._level = float(value)
 
     @logtime
     def training(self, answer, response):
@@ -221,19 +227,20 @@ class Robot(metaclass=Singleton):
             self._queue.put(value)
 
     @logtime
-    def _query(self, value):
-        best_match = {"level": 0, "response": []}
-        for response in self._responses:
-            test = similar(value, response["answer"])
-            if test > best_match["level"]:
-                best_match = {"level": test, "response": [response["response"], ]}
-            if test == best_match["level"]:
-                best_match["response"].append(response["response"])
-        if best_match["level"] >= self._level:
-            response = random.choice(best_match["response"])
-        else:
-            response = "notfound"
-        self.emit_event(value, response)
+    def _query(self, values):
+        for value in values.split(' %s ' % self.andoperator):
+            best_match = {"level": 0, "response": []}
+            for response in self._responses:
+                test = similar(value, response["answer"])
+                if test > best_match["level"]:
+                    best_match = {"level": test, "response": [response["response"], ]}
+                if test == best_match["level"]:
+                    best_match["response"].append(response["response"])
+            if best_match["level"] >= self._level:
+                response = random.choice(best_match["response"])
+            else:
+                response = "notfound"
+            self.emit_event(value, response)
 
     def _stopsound_gst(self, *args):
         try:

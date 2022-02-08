@@ -3,6 +3,7 @@ chatbot:
         answers:
             - ai je des mails
             - mails
+            - mes mails
             - j'ai des mails
         response:
             - vous avez [counter] emails
@@ -11,3 +12,7 @@ chatbot:
             - calendrier
             - aujourd'hui
             - ma journée
+            - mon agenda
+    notfound:
+        answers:
+            - vous n'avez pas de rendez vous

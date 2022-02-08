@@ -12,11 +12,13 @@ import urllib
 import base64
 from xml.dom.minidom import parse
 from icalendar import Calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 import tempfile
 import time
 
 __version__ = "0.0.1"
+
+NOT_EVENTS = "not events"
 
 
 class GmailProfil(metaclass=Singleton):
@@ -61,11 +63,26 @@ class CalendarProfil(metaclass=Singleton):
                         summ = component.get('summary')
                         start = component.get('dtstart').dt
                         end = component.get('dtend').dt
+                        try:
+                            if component.get('rrule')['FREQ'][0] == 'YEARLY' and component.get('rrule').get('UNTIL', None) is None:
+                                start = datetime.strptime('2022%s' % start.strftime("%m%d"), "%Y%m%d").date()
+                                end = datetime.strptime('2022%s' % end.strftime("%m%d"), "%Y%m%d").date()
+                            if component.get('rrule')['FREQ'][0] == 'WEEKLY' and component.get('rrule').get('UNTIL', None) is None:
+                                if today > start.date():
+                                    while today >= start.date():
+                                        start = start + timedelta(days=7)
+                                        end = end + timedelta(days=7)
+                                    start = start + timedelta(days=-7)
+                                    end = end + timedelta(days=-7)
+                        except Exception:
+                            pass
                         if isinstance(start, datetime):
-                            if end.date() >= today >= start.date():
+                            end = end.date()
+                            start = start.date()
+                            if end >= today >= start:
                                 events.append(summ)
                         else:
-                            if end >= today >= start:
+                            if end > today >= start:
                                 events.append(summ)
                 except Exception:
                     pass
@@ -130,10 +147,13 @@ def listengmail(value, response):
 
 
 def listencalendar(value, response):
+    global NOT_EVENTS
     logging.info("gmail - listen calendar")
     events = CalendarProfil().events
     if len(events) > 0:
         Robot().emit_event("", "say:%s" % "\n".join(events))
+    else:
+        Robot().emit_event("", "say:%s" % NOT_EVENTS)
 
 
 class Gmail(Plugin):
@@ -161,6 +181,8 @@ class Gmail(Plugin):
                 conversion = doc['chatbot']['calendar']
                 for answer in conversion['answers']:
                     Robot().training(answer, "calendar")
+                global NOT_EVENTS
+                NOT_EVENTS = doc['chatbot']['notfound']['answers'][0]
             except yaml.YAMLError as exc:
                 print("!!!!! ERROR")
                 print(exc)
