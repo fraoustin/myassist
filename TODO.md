@@ -8,6 +8,7 @@
 - jouer aux échec
 - avoir le temps restant de la minuterie
 - gérer et ajouter des tâches
+- envoie sms
 
 
 apt-get install gir1.2-gst-rtsp-server-1.0

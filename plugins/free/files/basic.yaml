@@ -1,0 +1,7 @@
+chatbot:
+    free:
+        answers:
+            - test sms
+    send:
+        answers:
+            - sms envoyé

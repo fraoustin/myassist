@@ -55,7 +55,7 @@ def search(term, num_results=1, lang="en", proxy=None, notfound="notfound"):
         if len(data.find_all('div', attrs={'id': 'NotFQb'})) > 0:
             return data.find('div', attrs={'id': 'NotFQb'}).find('input')['value']
         if len(data.find_all('div', attrs={'class': 'gws-csf-randomnumber__result'})) > 0:
-            return data.find('div', attrs={'class': 'gws-csf-randomnumber__result'}).getText(separator=u' ')            
+            return data.find('div', attrs={'class': 'gws-csf-randomnumber__result'}).getText(separator=u' ')
         return notfound
 
     html = fetch_results(term, num_results, lang)

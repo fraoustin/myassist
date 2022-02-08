@@ -1,0 +1,31 @@
+@font-face{
+    font-family:icomoon;
+    src:url(/free/icomoon.woff) format('woff');
+    font-weight:400;
+    font-style:normal
+}
+
+.icon-free,
+.icon-free-add,
+.icon-free-del{
+    font-family: icomoon;
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.icon-free:before {
+    content: "\ea93"
+}
+
+.icon-free-add:before {
+    content: "\e908"
+}
+
+.icon-free-del:before {
+    content: "\e902"
+}

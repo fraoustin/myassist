@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<table id="frees" style="width:100%">
+    <tr>
+        <td><label class="siimple-label">Free SMS</label></td>
+        <td></td>
+        <td></td>
+        <td class="minimal"><div class="siimple-btn--big icon-free-add siimple--float-right" onclick="add_free()"></div></td>
+    </tr>
+    {% for free in frees %}
+    <tr>
+        <td>{{ free }}</td>
+        <td>{{ frees[free]['id'] }}</td>
+        <td>{{ frees[free]['token'] }}</td>
+        <td><div class="siimple-btn--big icon-free-del siimple--float-right" onclick="del_free(this)" id="{{ free }}"></div</td>
+    </tr>
+    {% endfor %}
+    </div>
+</table>
+
+
+    
+<div class="siimple-modal siimple-modal--medium" id="addfree" style="display:none;">
+    <div class="siimple-modal-content">
+        <div class="siimple-modal-header">
+            <div class="siimple-modal-header-title">Add Free Account</div>
+            <div class="siimple-modal-header-close" onclick="close_free()"></div>
+        </div>
+        <div class="siimple-modal-body">
+            <table style="width: 100%;">
+                <tr>
+                    <td><label class="siimple-label">Name: </label></td>
+                    <td><input name="name" id="name" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">id free: </label></td>
+                    <td><input name="id" id="id" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+                <tr>
+                    <td><label class="siimple-label">token: </label></td>
+                    <td><input name="token" id="token" class="siimple-input siimple-input--fluid" value="" required></td>
+                </tr>
+            </table>
+        </div>
+        <div class="siimple-modal-footer">
+            <div class="siimple-navbar">
+                <div class="siimple--float-right">
+                    <div class="siimple--float-right siimple-btn siimple-btn--big icon-save siimple-btn--error" onclick="save_free()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
