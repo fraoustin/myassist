@@ -4,6 +4,7 @@ chatbot:
             - lance une minuterie
             - lance minuterie
             - minuterie
+            - sonne dans
         responses:
             - timer
     sleep:

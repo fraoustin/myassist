@@ -83,6 +83,7 @@ def listenfree(value, response):
     url = "https://smsapi.free-mobile.fr/sendmsg?"
     goto = url + urllib.parse.urlencode(f)
     urllib.request.urlopen(goto)
+    logging.info("free - send sms %s" % id)
     if speak is True:
         global SEND_SMS
         Robot().emit_event("", "say:%s" % SEND_SMS)

@@ -1,0 +1,23 @@
+chatbot:
+    chess:
+        answers:
+            - une partie d'échec
+            - une nouvelle partie
+            - on joue au échec
+            - nouvelle partie
+    piece:
+        K:
+            - roi
+        Q:
+            - reine
+        B:
+            - fou
+        N:
+            - cavalier
+        P:
+            - pion
+        R:
+            - tour
+    coordinator:
+        in:
+            - en

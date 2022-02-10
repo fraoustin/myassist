@@ -10,7 +10,7 @@ from db.models import ParamApp
 
 __version__ = "0.0.1"
 
-unitys = {'en': ['hour', 'minute'], 'fr': ['heure', 'minute']}
+unitys = {'en': ['hour', 'minute', 'in'], 'fr': ['heure', 'minute', 'dans']}
 
 RESPONSE_TIMER = "timer load for"
 END_TIMER = "end timer"
@@ -47,6 +47,20 @@ class TimerSleepThread(threading.Thread):
         self.robot.emit_event("", "volume_mute")
 
 
+class TimerThreadOtherFct(threading.Thread):
+
+    def __init__(self, timer, fct):
+        threading.Thread.__init__(self)
+        self.robot = Robot()
+        self.timer = timer * 60
+        self.fct = fct
+
+    def run(self):
+        time.sleep(self.timer)
+        logging.info("timer other fct - end timer for %s second" % self.timer)
+        self.robot.emit_event("", self.fct)
+
+
 def timer(value, response):
     global RESPONSE_TIMER
     global MINUTE_TIMER
@@ -65,11 +79,18 @@ def sleep(value, response):
     Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
 
 
+def timerotherfct(value, response):
+    th = TimerThreadOtherFct(int(response.split('|')[0]), '|'.join(response.split('|')[1:]))
+    th.start()
+
+
 class Timer(Plugin):
 
     def __init__(self, *args, **kw):
         Plugin.__init__(self, icon=False, *args, **kw)
+        self.before_app_first_request(self._init)
         Robot().add_event("timer", timer)
+        Robot().add_event("timerotherfct", timerotherfct)
         Robot().add_event("sleep", sleep)
 
     def init_db(self):
@@ -104,3 +125,11 @@ class Timer(Plugin):
                 MINUTE_TIMER = unitys[lang][1]
             except yaml.YAMLError as exc:
                 print(exc)
+
+    def _init(self):
+        lang = ParamApp.getValue("basic_langue")
+        for typ in [typ for typ in Robot().typs_training if typ not in ("timer", "sleep")]:
+            for training in Robot().trainings(typ):
+                for numberm in range(1, 60):
+                    Robot().training(training['answer'] + " " + unitys[lang][2] + " " + num2words(numberm, lang=lang) + " " + unitys[lang][1], "timerotherfct:%s|%s" % (numberm, training['response']))
+                    Robot().training(training['answer'] + " " + unitys[lang][2] + " " + str(numberm) + " " + unitys[lang][1], "timerotherfct:%s|%s" % (numberm, training['response']))

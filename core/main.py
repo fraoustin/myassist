@@ -46,7 +46,7 @@ class Core(Blueprint):
             db.session.add(ParamApp(key="basic_langue", value="fr"))
             db.session.commit()
         if ParamApp.get("basic_name") is None:
-            db.session.add(ParamApp(key="basic_name", value="Jarvis"))
+            db.session.add(ParamApp(key="basic_name", value=Robot().name))
             db.session.commit()
         if ParamApp.get("basic_langue mic") is None:
             db.session.add(ParamApp(key="basic_langue mic", value="fr-FR"))

@@ -15,13 +15,6 @@ chatbot:
             - bonjour monsieur
             - salut
             - bonjour
-    salutation:
-        answers:
-            - jarvis
-        responses:
-            - oui monsieur
-            - que puis je pour vous
-            - monsieur
     notfound:
         answers:
             - notfound
@@ -46,9 +39,13 @@ chatbot:
             - comment te nommes tu
             - qui es tu
         responses:
-            - je m'appelle Jarvis
-            - je suis Jarvis
-            - jarvis
+            - je m'appelle
+            - je suis
+    salutation:
+        responses:
+            - oui monsieur
+            - que puis je pour vous
+            - monsieur
     stop:
         answers:
             - non

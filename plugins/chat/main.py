@@ -45,11 +45,19 @@ class Chat(Plugin):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "basic.yaml"), "r") as stream:
             try:
                 doc = yaml.safe_load(stream)
-                for key in doc['chatbot']:
+                for key in [key for key in doc['chatbot'] if key not in ('salutation', 'who')]:
                     conversion = doc['chatbot'][key]
                     for answer in conversion['answers']:
                         for response in conversion['responses']:
                             Robot().training(answer, "say:%s" % response)
+                conversion = doc['chatbot']['salutation']
+                for response in conversion['responses']:
+                    Robot().training(Robot().name, "say:%s" % response)
+                conversion = doc['chatbot']['who']
+                for answer in conversion['answers']:
+                    Robot().training(answer, "say:%s" % Robot().name)
+                    for response in conversion['responses']:
+                        Robot().training(answer, "say:%s %s" % (response, Robot().name))
             except yaml.YAMLError as exc:
                 print(exc)
         Robot().add_event("say", saychat)

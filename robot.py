@@ -207,6 +207,17 @@ class Robot(metaclass=Singleton):
         if {"answer": answer, "response": response} in self._responses:
             self._responses.remove({"answer": answer, "response": response})
 
+    def trainings(self, typ):
+        return [response for response in self._responses if response['response'].split(":")[0] == typ]
+
+    @property
+    def typs_training(self):
+        typs = []
+        for response in self._responses:
+            if response['response'].split(":")[0] not in typs:
+                typs.append(response['response'].split(":")[0])
+        return typs
+
     @logtime
     def add_event(self, name, obs):
         if name not in [event.name for event in self._events]:

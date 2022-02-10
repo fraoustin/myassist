@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="board">{{ master.svg|safe }}</div>
+<div class="chesser icon-dialog"><input id="chesser" type="text" class="siimple-input" {% if master.is_check %}value="check"{% endif %} {% if master.is_checkmate %}value="mate"{% endif %}></div>
+{% endblock %}

@@ -15,3 +15,5 @@ icalendar>=4.0.9
 SpeechRecognition>=3.8.1
 wakeonlan>=2.1.0
 pyjokes>=0.6.0
+python-mpv>=0.5.2
+chess>=1.8.0
