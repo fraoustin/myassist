@@ -51,6 +51,9 @@ class Core(Blueprint):
         if ParamApp.get("basic_langue mic") is None:
             db.session.add(ParamApp(key="basic_langue mic", value="fr-FR"))
             db.session.commit()
+        if ParamApp.get("basic_timeout mic") is None:
+            db.session.add(ParamApp(key="basic_timeout mic", value="0"))
+            db.session.commit()
         if ParamApp.get("basic_similarity level") is None:
             db.session.add(ParamApp(key="basic_similarity level", value="0.9"))
             db.session.commit()
@@ -59,5 +62,6 @@ class Core(Blueprint):
             db.session.commit()
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_langue mic")
+        Robot().mic.timeout = int(ParamApp.getValue("basic_timeout mic"))
         Robot().level = ParamApp.getValue("basic_similarity level")
         Robot().andoperator = ParamApp.getValue("basic_and operator")

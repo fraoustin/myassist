@@ -142,6 +142,7 @@ class Mic(threading.Thread):
         threading.Thread.__init__(self)
         self.robot = robot
         self._langue = "fr-FR"
+        self._timeout = 0
         self._index_mic = 0
         self.start()
 
@@ -153,7 +154,10 @@ class Mic(threading.Thread):
             recognize.adjust_for_ambient_noise(source)
             self.robot.emit_event("", "say:I am ready")
             while self._stop is False:
-                audio = recognize.listen(source)
+                if self._timeout == 0:
+                    audio = recognize.listen(source)
+                else:
+                    audio = recognize.listen(source, timeout=self._timeout, phrase_time_limit=self._timeout)
                 try:
                     data = recognize.recognize_google(audio, language=self.langue)
                     logging.debug("recognize - %s" % data)
@@ -175,6 +179,14 @@ class Mic(threading.Thread):
     @langue.setter
     def langue(self, value):
         self._langue = value
+
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, value):
+        self._timeout = value
 
 
 class Robot(metaclass=Singleton):
