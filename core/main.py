@@ -63,5 +63,6 @@ class Core(Blueprint):
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_langue mic")
         Robot().mic.index_mic = int(ParamApp.getValue("basic_langue index mic"))
+        Robot().mic.start()
         Robot().level = ParamApp.getValue("basic_similarity level")
         Robot().andoperator = ParamApp.getValue("basic_and operator")
