@@ -148,19 +148,20 @@ class Mic(threading.Thread):
         self._stop = False
         recognize = sr.Recognizer()
         self.mic = sr.Microphone(device_index=self._index_mic)
-        recognize.adjust_for_ambient_noise(self.mic)
-        while self._stop is False:
-            audio = recognize.listen(self.mic)
-            try:
-                data = recognize.recognize_google(audio, language=self.langue)
-                logging.debug("recognize - %s" % data)
-                if self.robot.name in data:
-                    data = data[data.index(self.robot.name)+len(self.robot.name):]
-                    logging.debug("recognize query - %s" % data)
-                    self.robot.query(data.strip())
-            except Exception:
-                pass
-        self._isrun = False
+        with mic as source:
+            recognize.adjust_for_ambient_noise(source)
+            while self._stop is False:
+                audio = recognize.listen(source)
+                try:
+                    data = recognize.recognize_google(audio, language=self.langue)
+                    logging.debug("recognize - %s" % data)
+                    if self.robot.name in data:
+                        data = data[data.index(self.robot.name)+len(self.robot.name):]
+                        logging.debug("recognize query - %s" % data)
+                        self.robot.query(data.strip())
+                except Exception:
+                    pass
+            self._isrun = False
 
     def stop(self):
         self._stop = True
@@ -172,6 +173,7 @@ class Mic(threading.Thread):
     @index_mic.setter
     def index_mic(self, value):
         self._index_mic = value
+        self.mic = sr.Microphone(device_index=self._index_mic)
 
     @property
     def langue(self):

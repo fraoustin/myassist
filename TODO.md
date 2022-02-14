@@ -24,6 +24,7 @@ apt-get install python3-pyaudio
 apt-get install stockfish
 apt-get install mpv libmpv1
 apt-get install python3-pip
+apt-get install flac
 
 
 
