@@ -143,12 +143,13 @@ class Mic(threading.Thread):
         self.robot = robot
         self._langue = "fr-FR"
         self._index_mic = 0
+        self.start()
 
     def run(self):
         self._stop = False
         recognize = sr.Recognizer()
         self.mic = sr.Microphone(device_index=self._index_mic)
-        with mic as source:
+        with self.mic as source:
             recognize.adjust_for_ambient_noise(source)
             while self._stop is False:
                 audio = recognize.listen(source)
@@ -165,15 +166,6 @@ class Mic(threading.Thread):
 
     def stop(self):
         self._stop = True
-
-    @property
-    def index_mic(self):
-        return self._index_mic
-
-    @index_mic.setter
-    def index_mic(self, value):
-        self._index_mic = value
-        self.mic = sr.Microphone(device_index=self._index_mic)
 
     @property
     def langue(self):
