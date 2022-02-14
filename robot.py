@@ -151,6 +151,7 @@ class Mic(threading.Thread):
         self.mic = sr.Microphone(device_index=self._index_mic)
         with self.mic as source:
             recognize.adjust_for_ambient_noise(source)
+            self.robot.emit_event("", "say:I am ready")
             while self._stop is False:
                 audio = recognize.listen(source)
                 try:
