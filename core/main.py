@@ -54,6 +54,9 @@ class Core(Blueprint):
         if ParamApp.get("basic_timeout mic") is None:
             db.session.add(ParamApp(key="basic_timeout mic", value="0"))
             db.session.commit()
+        if ParamApp.get("basic_energy_threshold mic") is None:
+            db.session.add(ParamApp(key="basic_energy_threshold mic", value="0"))
+            db.session.commit()
         if ParamApp.get("basic_similarity level") is None:
             db.session.add(ParamApp(key="basic_similarity level", value="0.9"))
             db.session.commit()
@@ -63,5 +66,10 @@ class Core(Blueprint):
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_langue mic")
         Robot().mic.timeout = int(ParamApp.getValue("basic_timeout mic"))
+        Robot().mic.energy_threshold = int(ParamApp.getValue("basic_energy_threshold mic"))
         Robot().level = ParamApp.getValue("basic_similarity level")
         Robot().andoperator = ParamApp.getValue("basic_and operator")
+        try:
+            Robot().mic.start()
+        except Exception:
+            pass

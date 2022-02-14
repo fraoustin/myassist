@@ -143,8 +143,8 @@ class Mic(threading.Thread):
         self.robot = robot
         self._langue = "fr-FR"
         self._timeout = 0
+        self._energy_threshold = 0
         self._index_mic = 0
-        self.start()
 
     def run(self):
         self._stop = False
@@ -152,9 +152,12 @@ class Mic(threading.Thread):
         self.mic = sr.Microphone(device_index=self._index_mic)
         with self.mic as source:
             recognize.adjust_for_ambient_noise(source)
+            recognize.dynamic_energy_threshold = True
             self.robot.emit_event("", "say:I am ready")
             while self._stop is False:
-                if self._timeout == 0:
+                if self.energy_threshold > 0:
+                    recognize.energy_threshold = self.energy_threshold
+                if self.timeout == 0:
                     audio = recognize.listen(source)
                 else:
                     audio = recognize.listen(source, timeout=self._timeout, phrase_time_limit=self._timeout)
@@ -187,6 +190,14 @@ class Mic(threading.Thread):
     @timeout.setter
     def timeout(self, value):
         self._timeout = value
+
+    @property
+    def energy_threshold(self):
+        return self._energy_threshold
+
+    @energy_threshold.setter
+    def energy_threshold(self, value):
+        self._energy_threshold = value
 
 
 class Robot(metaclass=Singleton):
