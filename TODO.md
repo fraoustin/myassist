@@ -16,11 +16,14 @@
 
 
 
-
+apt-get update
+apt-get upgrade
 apt-get install gir1.2-gst-rtsp-server-1.0
 apt-get install libpulse0
 apt-get install python3-pyaudio
 apt-get install stockfish
 apt-get install mpv libmpv1
+apt-get install python3-pip
+
 
 
