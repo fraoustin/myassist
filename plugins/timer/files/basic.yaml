@@ -4,18 +4,6 @@ chatbot:
             - lance une minuterie
             - lance minuterie
             - minuterie
-            - sonne dans
+            - sonne
         responses:
             - timer
-    sleep:
-        answers:
-            - silence dans
-            - mute dans
-        responses:
-            - sleep
-    response:
-        responses:
-            - minuterie lancer pour
-    end:
-        responses:
-            - fin minuterie

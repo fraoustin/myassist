@@ -10,41 +10,9 @@ from db.models import ParamApp
 
 __version__ = "0.0.1"
 
-unitys = {'en': ['hour', 'minute', 'in'], 'fr': ['heure', 'minute', 'dans']}
-
-RESPONSE_TIMER = "timer load for"
-END_TIMER = "end timer"
-MINUTE_TIMER = "minute"
-
-
-class TimerThread(threading.Thread):
-
-    def __init__(self, timer):
-        threading.Thread.__init__(self)
-        self.robot = Robot()
-        self.timer = timer * 60
-
-    def run(self):
-        global END_TIMER
-        time.sleep(self.timer)
-        logging.info("timer - end timer for %s second" % self.timer)
-        self.robot.emit_event("", "say:%s" % END_TIMER)
-        self.robot._stopsound()
-        self.robot._playsound(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "timer.mp3"))
-
-
-class TimerSleepThread(threading.Thread):
-
-    def __init__(self, timer):
-        threading.Thread.__init__(self)
-        self.robot = Robot()
-        self.timer = timer * 60
-
-    def run(self):
-        global END_TIMER
-        time.sleep(self.timer)
-        logging.info("timer - end timer sleep for %s second" % self.timer)
-        self.robot.emit_event("", "volume_mute")
+unitys = {'en': ['hour', 'minute', 'second', 'in'], 'fr': ['heure', 'minute', 'seconde', 'dans']}
+TIMER = unitys['en']
+NUMBERS = {num2words(elt): elt for elt in range(0, 60)}
 
 
 class TimerThreadOtherFct(threading.Thread):
@@ -52,31 +20,50 @@ class TimerThreadOtherFct(threading.Thread):
     def __init__(self, timer, fct):
         threading.Thread.__init__(self)
         self.robot = Robot()
-        self.timer = timer * 60
+        self.timer = timer
         self.fct = fct
 
     def run(self):
         time.sleep(self.timer)
         logging.info("timer other fct - end timer for %s second" % self.timer)
-        self.robot.emit_event("", self.fct)
+        self.robot.query(self.fct)
 
 
-def timer(value, response):
-    global RESPONSE_TIMER
-    global MINUTE_TIMER
-    logging.info("timer - run timer for %s second" % response)
-    th = TimerThread(int(response))
+def check_timer(value):
+    global TIMER
+    count = 0
+    if ' %s ' % TIMER[3] not in value:
+        return value
+    search = value.split(' %s ' % TIMER[3])[-1]
+    action = ' %s ' % TIMER[3].join(value.split(' %s ' % TIMER[3])[:-1])
+    action = action.strip()
+    if TIMER[0] not in value and TIMER[1] not in value and TIMER[2] not in value:
+        return value
+    toseconds = 60 * 60 * 60
+    for unity in TIMER[:3]:
+        toseconds = toseconds / 60
+        if unity in search:
+            elt = search.split(unity)[0]
+            elt = elt.strip()
+            try:
+                count = int(elt) * toseconds + count
+            except Exception:
+                try:
+                    print(NUMBERS)
+                    print(elt)
+                    count = NUMBERS[elt] * toseconds + count
+                except Exception:
+                    search = ' ' + search
+            search = search.split(unity)[1:]
+            while len(search) > 0 and search[0] != ' ':
+                search = search[1:]
+    print("####timer %s" % count)
+    if count == 0:
+        return value
+    logging.info("timer - %s in %s seconds" % (action, count))
+    th = TimerThreadOtherFct(count, action)
     th.start()
-    Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
-
-
-def sleep(value, response):
-    global RESPONSE_TIMER
-    global MINUTE_TIMER
-    logging.info("timer - run timer sleep for %s second" % response)
-    th = TimerSleepThread(int(response))
-    th.start()
-    Robot().emit_event("", "say:%s %s %s" % (RESPONSE_TIMER, response, MINUTE_TIMER))
+    return ''
 
 
 def timerotherfct(value, response):
@@ -84,17 +71,32 @@ def timerotherfct(value, response):
     th.start()
 
 
+def buzzer(value, response):
+    logging.info("buzzer - %s" % response)
+    Robot()._stopsound()
+    Robot()._playsound(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "buzzer.mp3"))
+
+
 class Timer(Plugin):
 
     def __init__(self, *args, **kw):
         Plugin.__init__(self, icon=False, *args, **kw)
-        self.before_app_first_request(self._init)
-        Robot().add_event("timer", timer)
-        Robot().add_event("timerotherfct", timerotherfct)
-        Robot().add_event("sleep", sleep)
+        Robot().add_event("timer", buzzer)
+        Robot().add_before(check_timer)
 
     def init_db(self):
         lang = ParamApp.getValue("basic_langue")
+        global TIMER
+        TIMER = unitys[lang]
+        global NUMBERS
+        NUMBERS = {num2words(elt, lang=lang): elt for elt in range(0, 60)}
+        if lang == 'fr':
+            numbers_add = {}
+            for number in NUMBERS:
+                if number[-2:] == 'un':
+                    numbers_add[number + 'e'] = NUMBERS[number]
+            for number in numbers_add:
+                NUMBERS[number] = numbers_add[number]
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "basic.yaml"), "r") as stream:
             try:
                 doc = yaml.safe_load(stream)
@@ -102,34 +104,5 @@ class Timer(Plugin):
                 for answer in conversion['answers']:
                     for response in conversion['responses']:
                         Robot().training(answer, response)
-                        for number in range(1, 60):
-                            Robot().training(answer + " " + num2words(number, lang=lang) + " " + unitys[lang][0], "%s:%s" % (response, 60*number))
-                            Robot().training(answer + " " + num2words(number, lang=lang) + " " + unitys[lang][1], "%s:%s" % (response, number))
-                        for numberh in range(1, 8):
-                            for numberm in range(1, 60):
-                                Robot().training(answer + " " + num2words(numberh, lang=lang) + " " + unitys[lang][0] + " " + num2words(numberm, lang=lang) + " " + unitys[lang][1], "%s:%s" % (response, 60*numberh+numberm))
-                                Robot().training(answer + " " + str(numberh) + " " + unitys[lang][0] + " " + str(numberm) + " " + unitys[lang][1], "%s:%s" % (response, 60*numberh+numberm))
-                                Robot().training(answer + " " + num2words(numberh, lang=lang) + " " + unitys[lang][0] + " " + num2words(numberm, lang=lang), "%s:%s" % (response, 60*numberh+numberm))
-                                Robot().training(answer + " " + str(numberh) + " " + unitys[lang][0] + " " + str(numberm), "%s:%s" % (response, 60*numberh+numberm))
-                                Robot().training(answer + " " + str(numberh) + " " + str(numberm), "%s:%s" % (response, 60*numberh+numberm))
-                conversion = doc['chatbot']['sleep']
-                for answer in conversion['answers']:
-                    for response in conversion['responses']:
-                        for number in range(1, 99):
-                            Robot().training(answer + " " + num2words(number, lang=lang) + " " + unitys[lang][1], "%s:%s" % (response, number))
-                global RESPONSE_TIMER
-                RESPONSE_TIMER = doc['chatbot']['response']['responses'][0]
-                global END_TIMER
-                END_TIMER = doc['chatbot']['end']['responses'][0]
-                global MINUTE_TIMER
-                MINUTE_TIMER = unitys[lang][1]
             except yaml.YAMLError as exc:
                 print(exc)
-
-    def _init(self):
-        lang = ParamApp.getValue("basic_langue")
-        for typ in [typ for typ in Robot().typs_training if typ not in ("timer", "sleep")]:
-            for training in Robot().trainings(typ):
-                for numberm in range(1, 60):
-                    Robot().training(training['answer'] + " " + unitys[lang][2] + " " + num2words(numberm, lang=lang) + " " + unitys[lang][1], "timerotherfct:%s|%s" % (numberm, training['response']))
-                    Robot().training(training['answer'] + " " + unitys[lang][2] + " " + str(numberm) + " " + unitys[lang][1], "timerotherfct:%s|%s" % (numberm, training['response']))

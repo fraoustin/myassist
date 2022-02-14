@@ -7,6 +7,7 @@ import time
 import tempfile
 import os
 import random
+from num2words import num2words
 from os.path import abspath, exists
 from urllib.request import pathname2url
 import speech_recognition as sr
@@ -51,6 +52,30 @@ logger.addHandler(ch)
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
+
+class Test:
+    def __init__(self, value, level=0):
+        self.value = value
+        self.level = level
+
+    def __lt__(self, other):
+        return self.level < other.level
+
+    def __le__(self, other):
+        return self.level <= other.level
+
+    def __eq__(self, other):
+        return self.level == other.level
+
+    def __ne__(self, other):
+        return self.level != other.level
+
+    def __gt__(self, other):
+        return self.level > other.level
+
+    def __ge__(self, other):
+        return self.level >= other.level
 
 
 class PlaysoundException(Exception):
@@ -113,14 +138,6 @@ def logtime(func):
 
 class Mic(threading.Thread):
 
-    operator = {
-        "fr-FR":
-            {"+": "plus",
-            "-": "moins",
-            "x": "fois",
-            "/": "diviser"}
-    }
-
     def __init__(self, robot):
         threading.Thread.__init__(self)
         self.robot = robot
@@ -174,6 +191,7 @@ class Robot(metaclass=Singleton):
         self._level = level
         self._events = []
         self._responses = []
+        self._befores = []
         self._queue = Queue()
         self._thread = None
         self._playbin = None
@@ -203,6 +221,10 @@ class Robot(metaclass=Singleton):
         answer.strip()
         self._responses.append({"answer": answer, "response": response})
 
+    @logtime
+    def add_before(self, fct):
+        self._befores.append(fct)
+
     def remove_training(self, answer, response):
         if {"answer": answer, "response": response} in self._responses:
             self._responses.remove({"answer": answer, "response": response})
@@ -231,6 +253,7 @@ class Robot(metaclass=Singleton):
             [event for event in self._events if event.name == response.split(":")[0]][0](value, ":".join(response.split(":")[1:]))
 
     def query(self, value):
+        value.strip()
         if self._thread is None:
             self._thread = QueryThread()
             self._thread.start()
@@ -239,19 +262,38 @@ class Robot(metaclass=Singleton):
 
     @logtime
     def _query(self, values):
-        for value in values.split(' %s ' % self.andoperator):
-            best_match = {"level": 0, "response": []}
-            for response in self._responses:
-                test = similar(value, response["answer"])
-                if test > best_match["level"]:
-                    best_match = {"level": test, "response": [response["response"], ]}
-                if test == best_match["level"]:
-                    best_match["response"].append(response["response"])
-            if best_match["level"] >= self._level:
-                response = random.choice(best_match["response"])
-            else:
-                response = "notfound"
-            self.emit_event(value, response)
+        values = values.split(' %s ' % self.andoperator)
+        for value in values:
+            try:
+                idx = values.index(value) + 1
+                if values[idx].split(' ')[0] in [num2words(num, lang=self.mic.langue.split('-')[0]) for num in range(0, 9)] + ['une', ]:
+                    values[idx] = value + ' %s ' % self.andoperator + values[idx]
+                    values[idx-1] = ''
+            except IndexError:
+                pass
+        for value in [val for val in values if len(val) > 0]:
+            start = time.time()
+            for before in self._befores:
+                if len(value) > 0:
+                    value = before(value)
+                else:
+                    continue
+            if len(value) > 0:
+                results = []
+                best_match = {"level": 0, "response": []}
+                for response in self._responses:
+                    results.append(Test(response["response"], similar(value, response["answer"])))
+                end = time.time()
+                best_match["level"] = max(results).level
+                best_match["response"] = [test.value for test in results if best_match["level"] == test.level]
+                if best_match["level"] >= self._level:
+                    response = random.choice(best_match["response"])
+                else:
+                    response = "notfound"
+                logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
+                self.emit_event(value, response)
+                return True
+            return False
 
     def _stopsound_gst(self, *args):
         try:
