@@ -1,6 +1,7 @@
 from plugins import Plugin
+import time
 from robot import Robot, Singleton
-import apa102
+from plugins.ledhat import apa102
 
 __version__ = "0.0.1"
 
@@ -16,7 +17,7 @@ COLORS = {"red": (48, 0, 0),
 
 class LedHatManage(metaclass=Singleton):
 
-    def __init__(self, eng, fen, pieces, port=5000):
+    def __init__(self):
         self._dev = apa102.APA102(num_led=3)
         self._pixels = ['black', 'black', 'black']
     
@@ -46,5 +47,6 @@ class Ledhat(Plugin):
         LedHatManage().clear()
         for color in COLORS:
             LedHatManage().set_pixel('all', color)
+            time.sleep(2)
         LedHatManage().clear()
 
