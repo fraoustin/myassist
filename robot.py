@@ -160,7 +160,7 @@ class Mic(threading.Thread):
                 if self.timeout == 0:
                     audio = recognize.listen(source)
                 else:
-                    audio = recognize.listen(source, timeout=self._timeout, phrase_time_limit=self._timeout)
+                    audio = recognize.listen(source, phrase_time_limit=self._timeout)
                 try:
                     data = recognize.recognize_google(audio, language=self.langue)
                     logging.debug("recognize - %s" % data)

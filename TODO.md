@@ -33,5 +33,5 @@ apt-get install flac
 apt-get install libportaudio-dev
 apt-get install python3-dev
 apt-get install libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev
-
+apt-get install libjack-jackd2-dev
 

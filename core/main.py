@@ -49,13 +49,13 @@ class Core(Blueprint):
             db.session.add(ParamApp(key="basic_name", value=Robot().name))
             db.session.commit()
         if ParamApp.get("basic_langue mic") is None:
-            db.session.add(ParamApp(key="basic_langue mic", value="fr-FR"))
+            db.session.add(ParamApp(key="basic_mic langue", value="fr-FR"))
             db.session.commit()
         if ParamApp.get("basic_timeout mic") is None:
-            db.session.add(ParamApp(key="basic_timeout mic", value="0"))
+            db.session.add(ParamApp(key="basic_mic timeout", value="0"))
             db.session.commit()
-        if ParamApp.get("basic_energy_threshold mic") is None:
-            db.session.add(ParamApp(key="basic_energy_threshold mic", value="0"))
+        if ParamApp.get("basic_energy_mic threshold") is None:
+            db.session.add(ParamApp(key="basic_mic energy_threshold", value="0"))
             db.session.commit()
         if ParamApp.get("basic_similarity level") is None:
             db.session.add(ParamApp(key="basic_similarity level", value="0.9"))
@@ -64,9 +64,9 @@ class Core(Blueprint):
             db.session.add(ParamApp(key="basic_and operator", value="et"))
             db.session.commit()
         Robot().name = ParamApp.getValue("basic_name")
-        Robot().mic.lang = ParamApp.getValue("basic_langue mic")
-        Robot().mic.timeout = int(ParamApp.getValue("basic_timeout mic"))
-        Robot().mic.energy_threshold = int(ParamApp.getValue("basic_energy_threshold mic"))
+        Robot().mic.lang = ParamApp.getValue("basic_mic langue")
+        Robot().mic.timeout = int(ParamApp.getValue("basic_mic timeout"))
+        Robot().mic.energy_threshold = int(ParamApp.getValue("basic_mic energy_threshold"))
         Robot().level = ParamApp.getValue("basic_similarity level")
         Robot().andoperator = ParamApp.getValue("basic_and operator")
         try:
