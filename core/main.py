@@ -48,13 +48,13 @@ class Core(Blueprint):
         if ParamApp.get("basic_name") is None:
             db.session.add(ParamApp(key="basic_name", value=Robot().name))
             db.session.commit()
-        if ParamApp.get("basic_langue mic") is None:
+        if ParamApp.get("basic_mic langue") is None:
             db.session.add(ParamApp(key="basic_mic langue", value="fr-FR"))
             db.session.commit()
-        if ParamApp.get("basic_timeout mic") is None:
+        if ParamApp.get("basic_mic timeout") is None:
             db.session.add(ParamApp(key="basic_mic timeout", value="0"))
             db.session.commit()
-        if ParamApp.get("basic_energy_mic threshold") is None:
+        if ParamApp.get("basic_mic energy_threshold") is None:
             db.session.add(ParamApp(key="basic_mic energy_threshold", value="0"))
             db.session.commit()
         if ParamApp.get("basic_similarity level") is None:
