@@ -156,14 +156,20 @@ class Mic(threading.Thread):
             self.robot.emit_event("", "say:I am ready")
             while self._stop is False:
                 if self.energy_threshold > 0:
+                    logging.info("threshold %s" % self.energy_threshold)
                     recognize.energy_threshold = self.energy_threshold
+                start = time.time()
                 if self.timeout == 0:
+                    logging.info("listen without timeout")
                     audio = recognize.listen(source)
                 else:
+                    logging.info("listen with timeout %s" % self._timeout)
                     audio = recognize.listen(source, phrase_time_limit=self._timeout)
+                end = time.time()
                 try:
+                    logging.info("listen %s second" % str(start-end))
                     data = recognize.recognize_google(audio, language=self.langue)
-                    logging.debug("recognize - %s" % data)
+                    logging.info("recognize - %s" % data)
                     if self.robot.name in data:
                         data = data[data.index(self.robot.name)+len(self.robot.name):]
                         logging.debug("recognize query - %s" % data)
