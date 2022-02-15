@@ -89,10 +89,10 @@ class Radio(Plugin):
     def init_db(self):
         if ParamApp.get("radio") is None:
             value = {
-                'franceinter': 'https://icecast.radiofrance.fr/franceinter-midfi.mp3?id=radiofrance',
-                'tsfjazz': 'https://tsfjazz.ice.infomaniak.ch:80/tsfjazz-high.mp3',
-                'franceinfo': 'http://direct.franceinfo.fr/live/franceinfo-midfi.mp3',
-                'fip': 'https://icecast.radiofrance.fr/fip-midfi.mp3?id=fip'
+                'France Inter': 'https://icecast.radiofrance.fr/franceinter-midfi.mp3?id=radiofrance',
+                'Jazz': 'https://tsfjazz.ice.infomaniak.ch:80/tsfjazz-high.mp3',
+                'France Info': 'http://direct.franceinfo.fr/live/franceinfo-midfi.mp3',
+                'Fip': 'https://icecast.radiofrance.fr/fip-midfi.mp3?id=fip'
             }
             db.session.add(ParamApp(key="radio", value=json.dumps(value)))
             db.session.commit()

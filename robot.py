@@ -145,6 +145,7 @@ class Mic(threading.Thread):
         self._timeout = 0
         self._energy_threshold = 0
         self._index_mic = 0
+        self._direct = "False"
 
     def run(self):
         self._stop = False
@@ -173,7 +174,10 @@ class Mic(threading.Thread):
                     if self.robot.name in data:
                         data = data[data.index(self.robot.name)+len(self.robot.name):]
                         logging.debug("recognize query - %s" % data)
-                        self.robot.query(data.strip())
+                        self.robot.query(data.strip(), notfound=True)
+                    elif self.direct in ('true', 'True'):
+                        logging.debug("recognize query - %s" % data)
+                        self.robot.query(data.strip(), notfound=True)
                 except Exception:
                     pass
             self._isrun = False
@@ -204,6 +208,14 @@ class Mic(threading.Thread):
     @energy_threshold.setter
     def energy_threshold(self, value):
         self._energy_threshold = value
+
+    @property
+    def direct(self):
+        return self._direct
+
+    @direct.setter
+    def direct(self, value):
+        self.direct = value
 
 
 class Robot(metaclass=Singleton):
@@ -283,7 +295,7 @@ class Robot(metaclass=Singleton):
             self._queue.put(value)
 
     @logtime
-    def _query(self, values):
+    def _query(self, values, notfound=True):
         values = values.split(' %s ' % self.andoperator)
         for value in values:
             try:
@@ -310,10 +322,13 @@ class Robot(metaclass=Singleton):
                 best_match["response"] = [test.value for test in results if best_match["level"] == test.level]
                 if best_match["level"] >= self._level:
                     response = random.choice(best_match["response"])
+                    logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
+                    self.emit_event(value, response)
                 else:
                     response = "notfound"
-                logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
-                self.emit_event(value, response)
+                    if notfound is True:
+                        logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
+                        self.emit_event(value, response)
                 return True
             return False
 

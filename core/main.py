@@ -48,6 +48,9 @@ class Core(Blueprint):
         if ParamApp.get("basic_name") is None:
             db.session.add(ParamApp(key="basic_name", value=Robot().name))
             db.session.commit()
+        if ParamApp.get("basic_mic direct") is None:
+            db.session.add(ParamApp(key="basic_mic direct", value="False"))
+            db.session.commit()
         if ParamApp.get("basic_mic langue") is None:
             db.session.add(ParamApp(key="basic_mic langue", value="fr-FR"))
             db.session.commit()
@@ -65,6 +68,7 @@ class Core(Blueprint):
             db.session.commit()
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_mic langue")
+        Robot().mic.direct = ParamApp.getValue("basic_mic direct")
         Robot().mic.timeout = int(ParamApp.getValue("basic_mic timeout"))
         Robot().mic.energy_threshold = int(ParamApp.getValue("basic_mic energy_threshold"))
         Robot().level = ParamApp.getValue("basic_similarity level")

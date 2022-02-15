@@ -63,7 +63,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('MYASSIST_DB', config['MY
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # generate robot
-robot = Robot('Ava')
+robot = Robot('Jarvis')
 
 # register Auth
 app.register_blueprint(Auth(url_prefix="/"))
