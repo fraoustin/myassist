@@ -162,20 +162,26 @@ class Mic(threading.Thread):
                 start = time.time()
                 if self.timeout == 0:
                     logging.info("listen without timeout")
+                    self.robot.emit_event("ledhat:1|red")
                     audio = recognize.listen(source)
                 else:
                     logging.info("listen with timeout %s" % self._timeout)
+                    self.robot.emit_event("ledhat:1|red")
                     audio = recognize.listen(source, phrase_time_limit=self._timeout)
                 end = time.time()
                 try:
-                    logging.info("listen %s second" % str(start-end))
+                    self.robot.emit_event("ledhat:1|green")
+                    logging.info("listen %s second" % str(end-start))
                     data = recognize.recognize_google(audio, language=self.langue)
+                    self.robot.emit_event("ledhat:1|blue")
                     logging.info("recognize - %s" % data)
                     if self.robot.name in data:
                         data = data[data.index(self.robot.name)+len(self.robot.name):]
+                        self.robot.emit_event("ledhat:2|purple")
                         logging.debug("recognize query - %s" % data)
                         self.robot.query(data.strip(), notfound=True)
                     elif self.direct in ('true', 'True'):
+                        self.robot.emit_event("ledhat:2|yellow")
                         logging.debug("recognize query - %s" % data)
                         self.robot.query(data.strip(), notfound=True)
                 except Exception:
