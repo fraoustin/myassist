@@ -67,3 +67,4 @@ class Volume(Plugin):
         if ParamApp.get("basic_volume") is None:
             db.session.add(ParamApp(key="basic_volume", value="0.5"))
             db.session.commit()
+        set_volume(int(ParamApp.getValue("basic_volume")))

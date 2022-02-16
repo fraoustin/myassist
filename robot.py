@@ -287,6 +287,7 @@ class Robot(metaclass=Singleton):
 
     @logtime
     def _query(self, values):
+        logging.info("querys %s" % values)
         values = values.split(' %s ' % self.andoperator)
         for value in values:
             try:
@@ -298,17 +299,22 @@ class Robot(metaclass=Singleton):
                 pass
         for value in [val for val in values if len(val) > 0]:
             start = time.time()
-            if self._direct is False:
+            if self.direct is False:
+                logging.info("direct mode desactivate")
                 if self.name in value:
                     value = value[value.index(self.name)+len(self.name):]
                 else:
+                    logging.warning("not found name of robot")
                     break
+            else:
+                logging.info("direct mode activate")
             for before in self._befores:
                 if len(value) > 0:
                     value = before(value)
                 else:
                     continue
             if len(value) > 0:
+                logging.info("query %s" % value)
                 results = []
                 best_match = {"level": 0, "response": []}
                 for response in self._responses:
@@ -322,7 +328,7 @@ class Robot(metaclass=Singleton):
                     self.emit_event(value, response)
                 else:
                     response = "notfound"
-                    if self._direct is False:
+                    if self.direct is False:
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
                 return True

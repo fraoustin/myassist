@@ -32,7 +32,7 @@ def historic():
 
 
 def saychat(value, response):
-    logging.info("chat - %s" % response)
+    logging.info("historic chat - %s" % response)
     HISTORIC_SAYS.append({'epoch': int(time.time()*10000), 'response': response, 'query': value})
     if len(HISTORIC_SAYS) > 10:
         del HISTORIC_SAYS[0:len(HISTORIC_SAYS)-10]

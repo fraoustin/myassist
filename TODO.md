@@ -10,6 +10,7 @@
 - gérer les question quelle heure est il? quelle date?
 - envoyer un sms non prévu: envoie un sms à laure as tu pris du pain
 
+- initialiser le son
 
 apt-get update
 apt-get upgrade
