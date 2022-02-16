@@ -11,6 +11,8 @@ chatbot:
         answers:
             - baisse le son
             - baisse le volume
+            - diminue le son
+            - diminue le volume
             - c'est trop fort
         responses:
             - volume_down

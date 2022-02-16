@@ -169,7 +169,6 @@ class Mic(threading.Thread):
                     self.robot.query(data.strip())
                 except Exception:
                     pass
-            self._isrun = False
 
     def stop(self):
         self._stop = True

@@ -5,13 +5,27 @@ from plugins.ledhat import apa102
 
 __version__ = "0.0.1"
 
-COLORS = {"red": (48, 0, 0),
+COLORS = {"redl": (12, 0, 0),
+    "red": (48, 0, 0),
+    "redh": (96, 0, 0),
+    'greenl': (0, 12, 0),
     'green': (0, 48, 0),
+    'greenh': (0, 96, 0),
+    'bluel': (0, 0, 12),
     'blue': (0, 0, 48),
+    'blueh': (0, 0, 96),
+    'yellowl': (12, 12, 0),
     'yellow': (48, 48, 0),
+    'yellowh': (96, 96, 0),
+    'indiglol': (0, 12, 12),
     'indiglo': (0, 48, 48),
+    'indigloh': (0, 96, 96),
+    'purplel': (12, 0, 12),
     'purple': (48, 0, 48),
+    'purpleh': (96, 0, 96),
+    'whitel': (12, 12, 12),
     'white': (48, 48, 48),
+    'whiteh': (96, 96, 96),
     'black': (0, 0, 0)}
 
 

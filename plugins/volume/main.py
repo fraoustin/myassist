@@ -4,6 +4,7 @@ import os
 import yaml
 from db import db
 from db.models import ParamApp
+import math
 
 __version__ = "0.0.1"
 
@@ -22,10 +23,11 @@ def get_volume():
             vol = int(extract)
         except Exception:
             pass
-    return vol
+    return int(20.189*math.log(vol)+7.0618)
 
 
-def set_volume(value):
+def set_volume(volume):
+    value = 20.189*math.log(volume)+7.0618
     global CHANNELS
     for channel in CHANNELS:
         os.system("amixer set %s %s%%" % (channel, value))
@@ -73,10 +75,10 @@ class Volume(Plugin):
 
     def init_db(self):
         if ParamApp.get("basic_volume") is None:
-            db.session.add(ParamApp(key="basic_volume", value="50"))
+            db.session.add(ParamApp(key="basic_volume", value="90"))
             db.session.commit()
         if ParamApp.get("basic_volume channels") is None:
-            db.session.add(ParamApp(key="basic_volume channels", value="Playback"))
+            db.session.add(ParamApp(key="basic_volume channels", value="Speaker"))
             db.session.commit()
         global CHANNELS
         CHANNELS = ParamApp.getValue("basic_volume channels").split(";")
