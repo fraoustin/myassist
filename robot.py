@@ -8,8 +8,6 @@ import tempfile
 import os
 import random
 from num2words import num2words
-from os.path import abspath, exists
-from urllib.request import pathname2url
 import speech_recognition as sr
 import mpv
 

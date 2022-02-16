@@ -10,8 +10,6 @@
 - gérer les question quelle heure est il? quelle date?
 - envoyer un sms non prévu: envoie un sms à laure as tu pris du pain
 
-- refonte la gestion du volume
-
 apt-get update
 apt-get upgrade
 apt-get install python3-pyaudio
@@ -19,10 +17,12 @@ apt-get install stockfish
 #apt-get install python3-dev
 apt-get install python3-mpv
 apt-get install python3-pip
-#apt-get install python3-gi
-#apt-get install python3-gst-1.0
 apt-get install python3-requests
 apt-get install flac
+
+
+
+
 
 
 
