@@ -10,21 +10,33 @@
 - gérer les question quelle heure est il? quelle date?
 - envoyer un sms non prévu: envoie un sms à laure as tu pris du pain
 
-- initialiser le son
+- refonte la gestion du volume
 
 apt-get update
 apt-get upgrade
 apt-get install python3-pyaudio
 apt-get install stockfish
-apt-get install python3-dev
+#apt-get install python3-dev
 apt-get install python3-mpv
 apt-get install python3-pip
-apt-get install python3-gi
-apt-get install python3-gst-1.0
+#apt-get install python3-gi
+#apt-get install python3-gst-1.0
 apt-get install python3-requests
 apt-get install flac
+
+
+
+
 apt-get install portaudio19-dev
 apt-get install libatlas-base-dev
+apt-get install pulseaudio
+
+
+
+
+
+apt-get install gstreamer1.0-pulseaudio
+apt-get install pulseaudio-utils
 
 
 

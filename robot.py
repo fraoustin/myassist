@@ -11,14 +11,7 @@ from num2words import num2words
 from os.path import abspath, exists
 from urllib.request import pathname2url
 import speech_recognition as sr
-try:
-    import mpv
-    MPV = True
-except Exception:
-    from gi.repository import Gst
-    import gi
-    gi.require_version('Gst', '1.0')
-    MPV = False
+import mpv
 
 
 class RobotHandler(logging.Handler):
@@ -222,16 +215,6 @@ class Robot(metaclass=Singleton):
         self._direct = 'False'
         self.mic = Mic(self)
         self.andoperator = andoperator
-        global MPV
-        if MPV is False:
-            print("module speak GST")
-            Gst.init(None)
-            self._playsound = self._playsound_gst
-            self._stopsound = self._stopsound_gst
-        else:
-            print("module speak MPV")
-            self._playsound = self._playsound_mpv
-            self._stopsound = self._stopsound_mpv
 
     @property
     def level(self):
@@ -334,30 +317,13 @@ class Robot(metaclass=Singleton):
                 return True
             return False
 
-    def _stopsound_gst(self, *args):
-        try:
-            self._playbin.set_state(Gst.State.READY)
-        except Exception:
-            pass
-
-    def _playsound_gst(self, url):
-        self._playbin = Gst.ElementFactory.make('playbin', 'playbin')
-        if url.startswith(('http://', 'https://')):
-            self._playbin.props.uri = url
-        else:
-            path = abspath(url)
-            if not exists(path):
-                raise PlaysoundException(u'File not found: {}'.format(path))
-            self._playbin.props.uri = 'file://' + pathname2url(path)
-        self._playbin.set_state(Gst.State.PLAYING)
-
-    def _stopsound_mpv(self, *args):
+    def _stopsound(self, *args):
         try:
             self._playbin.stop()
         except Exception:
             pass
 
-    def _playsound_mpv(self, url):
+    def _playsound(self, url):
         self._playbin = mpv.MPV(ytdl=True)
         self._playbin.play(url)
 

@@ -65,6 +65,6 @@ class Volume(Plugin):
 
     def init_db(self):
         if ParamApp.get("basic_volume") is None:
-            db.session.add(ParamApp(key="basic_volume", value="0.5"))
+            db.session.add(ParamApp(key="basic_volume", value="50"))
             db.session.commit()
-        set_volume(float(ParamApp.getValue("basic_volume")))
+        set_volume(int(ParamApp.getValue("basic_volume")))
