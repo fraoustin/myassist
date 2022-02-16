@@ -9,11 +9,6 @@
 - faire un gestionnaire de scénario
 - gérer les question quelle heure est il? quelle date?
 - envoyer un sms non prévu: envoie un sms à laure as tu pris du pain
-- optimiser temps de recherche en local
-
-- faire la gestion de la minuterie "dans x minutes" au niveau du robot par un _before_query
-
-
 
 
 apt-get update

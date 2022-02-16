@@ -162,28 +162,20 @@ class Mic(threading.Thread):
                 start = time.time()
                 if self.timeout == 0:
                     logging.info("listen without timeout")
-                    self.robot.emit_event("", "ledhat:1|red")
+                    self.robot.emit_event("", "ledhat:red|red|red")
                     audio = recognize.listen(source)
                 else:
                     logging.info("listen with timeout %s" % self._timeout)
-                    self.robot.emit_event("", "ledhat:1|red")
+                    self.robot.emit_event("", "ledhat:red|red|red")
                     audio = recognize.listen(source, phrase_time_limit=self._timeout)
                 end = time.time()
                 try:
-                    self.robot.emit_event("", "ledhat:1|green")
+                    self.robot.emit_event("", "ledhat:green|green|green")
                     logging.info("listen %s second" % str(end-start))
                     data = recognize.recognize_google(audio, language=self.langue)
-                    self.robot.emit_event("", "ledhat:1|blue")
+                    self.robot.emit_event("", "ledhat:blue|blue|blue")
                     logging.info("recognize - %s" % data)
-                    if self.robot.name in data:
-                        data = data[data.index(self.robot.name)+len(self.robot.name):]
-                        self.robot.emit_event("", "ledhat:2|purple")
-                        logging.debug("recognize query - %s" % data)
-                        self.robot.query(data.strip(), notfound=True)
-                    elif self.direct in ('true', 'True'):
-                        self.robot.emit_event("", "ledhat:2|yellow")
-                        logging.debug("recognize query - %s" % data)
-                        self.robot.query(data.strip(), notfound=True)
+                    self.robot.query(data.strip())
                 except Exception:
                     pass
             self._isrun = False
@@ -215,14 +207,6 @@ class Mic(threading.Thread):
     def energy_threshold(self, value):
         self._energy_threshold = value
 
-    @property
-    def direct(self):
-        return self._direct
-
-    @direct.setter
-    def direct(self, value):
-        self._direct = value
-
 
 class Robot(metaclass=Singleton):
 
@@ -235,6 +219,7 @@ class Robot(metaclass=Singleton):
         self._queue = Queue()
         self._thread = None
         self._playbin = None
+        self._direct = 'False'
         self.mic = Mic(self)
         self.andoperator = andoperator
         global MPV
@@ -301,7 +286,7 @@ class Robot(metaclass=Singleton):
             self._queue.put(value)
 
     @logtime
-    def _query(self, values, notfound=True):
+    def _query(self, values):
         values = values.split(' %s ' % self.andoperator)
         for value in values:
             try:
@@ -313,6 +298,11 @@ class Robot(metaclass=Singleton):
                 pass
         for value in [val for val in values if len(val) > 0]:
             start = time.time()
+            if self._direct not in ('true', 'True'):
+                if self.name in value:
+                    value = value[value.index(self.name)+len(self.name):]
+                else:
+                    break
             for before in self._befores:
                 if len(value) > 0:
                     value = before(value)
@@ -332,7 +322,7 @@ class Robot(metaclass=Singleton):
                     self.emit_event(value, response)
                 else:
                     response = "notfound"
-                    if notfound is True:
+                    if self._direct not in ('true', 'True'):
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
                 return True
@@ -371,3 +361,11 @@ class Robot(metaclass=Singleton):
         path = os.path.join(tempfile.gettempdir(), "%s.mp3" % int(time.time()))
         tts.save(path)
         self._playsound(path)
+
+    @property
+    def direct(self):
+        return self._direct
+
+    @direct.setter
+    def direct(self, value):
+        self._direct = value

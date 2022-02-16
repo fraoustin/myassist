@@ -19,21 +19,17 @@ class LedHatManage(metaclass=Singleton):
 
     def __init__(self):
         self._dev = apa102.APA102(num_led=3)
-        self._pixels = ['black', 'black', 'black']
-    
-    def set_pixel(self, pixel, color):
-        if pixel == 'all':
-            for pixel in range(3):
-                self._pixels[pixel] = color
-        else:
-            self._pixels[pixel] = color
-        for pixel in range(3):
-            self._dev.set_pixel(pixel, *COLORS[self._pixels[pixel]])
+        self.clear()
+
+    def set_pixel(self, *pixels):
+        id = 0
+        for pixel in pixels:
+            if pixel in COLORS:
+                self._dev.set_pixel(id, *COLORS[pixel])
         self._dev.show()
-    
+
     def clear(self):
-        for pixel in range(3):
-            self.set_pixel(pixel, 'black')
+        self.set_pixel('black', 'black', 'black')
 
 
 def ledhat(value, response):
@@ -46,7 +42,6 @@ class Ledhat(Plugin):
         Robot().add_event("ledhat", ledhat)
         LedHatManage().clear()
         for color in COLORS:
-            LedHatManage().set_pixel('all', color)
+            LedHatManage().set_pixel(color, color, color)
             time.sleep(2)
         LedHatManage().clear()
-

@@ -68,7 +68,7 @@ class Core(Blueprint):
             db.session.commit()
         Robot().name = ParamApp.getValue("basic_name")
         Robot().mic.lang = ParamApp.getValue("basic_mic langue")
-        Robot().mic.direct = ParamApp.getValue("basic_mic direct")
+        Robot().direct = ParamApp.getValue("basic_mic direct")
         Robot().mic.timeout = int(ParamApp.getValue("basic_mic timeout"))
         Robot().mic.energy_threshold = int(ParamApp.getValue("basic_mic energy_threshold"))
         Robot().level = ParamApp.getValue("basic_similarity level")
