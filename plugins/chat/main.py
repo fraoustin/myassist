@@ -20,6 +20,8 @@ def chat():
 @login_required
 def query():
     query = request.form.get('query', '')
+    if Robot().direct is False and Robot().name not in query:
+        query = "%s %s" % (Robot().name, query)
     Robot().query(query)
     return {'status': 'ok'}, 200
 

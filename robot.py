@@ -298,7 +298,7 @@ class Robot(metaclass=Singleton):
                 pass
         for value in [val for val in values if len(val) > 0]:
             start = time.time()
-            if self._direct not in ('true', 'True'):
+            if self._direct is False:
                 if self.name in value:
                     value = value[value.index(self.name)+len(self.name):]
                 else:
@@ -322,7 +322,7 @@ class Robot(metaclass=Singleton):
                     self.emit_event(value, response)
                 else:
                     response = "notfound"
-                    if self._direct not in ('true', 'True'):
+                    if self._direct is False:
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
                 return True
@@ -364,7 +364,9 @@ class Robot(metaclass=Singleton):
 
     @property
     def direct(self):
-        return self._direct
+        if self._direct in ('True', 'true'):
+            return True
+        return False
 
     @direct.setter
     def direct(self, value):

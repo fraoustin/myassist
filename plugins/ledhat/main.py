@@ -11,8 +11,8 @@ COLORS = {"red": (48, 0, 0),
     'yellow': (48, 48, 0),
     'indiglo': (0, 48, 48),
     'purple': (48, 0, 48),
-    'black': (0, 0, 0),
-    'white': (48, 48, 48)}
+    'white': (48, 48, 48),
+    'black': (0, 0, 0)}
 
 
 class LedHatManage(metaclass=Singleton):
@@ -26,6 +26,7 @@ class LedHatManage(metaclass=Singleton):
         for pixel in pixels:
             if pixel in COLORS:
                 self._dev.set_pixel(id, *COLORS[pixel])
+            id = id + 1
         self._dev.show()
 
     def clear(self):
