@@ -223,8 +223,7 @@ class Robot(metaclass=Singleton):
 
     @logtime
     def training(self, answer, response):
-        answer.strip()
-        self._responses.append({"answer": answer, "response": response})
+        self._responses.append({"answer": answer.strip(), "response": response.strip()})
 
     @logtime
     def add_before(self, fct):
@@ -258,12 +257,11 @@ class Robot(metaclass=Singleton):
             [event for event in self._events if event.name == response.split(":")[0]][0](value, ":".join(response.split(":")[1:]))
 
     def query(self, value):
-        value.strip()
         if self._thread is None:
             self._thread = QueryThread()
             self._thread.start()
         if len(value) > 0:
-            self._queue.put(value)
+            self._queue.put(value.strip())
 
     @logtime
     def _query(self, values):
@@ -294,6 +292,7 @@ class Robot(metaclass=Singleton):
                 else:
                     continue
             if len(value) > 0:
+                value = value.strip()
                 logging.info("query %s" % value)
                 results = []
                 best_match = {"level": 0, "response": []}
