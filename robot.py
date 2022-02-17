@@ -266,6 +266,11 @@ class Robot(metaclass=Singleton):
     @logtime
     def _query(self, values):
         logging.info("querys %s" % values)
+        if self.name in values:
+            values = values[values.index(self.name)+len(self.name):]
+            hasname = True
+        else:
+            hasname = False
         values = values.split(' %s ' % self.andoperator)
         for value in values:
             try:
@@ -277,15 +282,9 @@ class Robot(metaclass=Singleton):
                 pass
         for value in [val for val in values if len(val) > 0]:
             start = time.time()
-            if self.direct is False:
-                logging.info("direct mode desactivate")
-                if self.name in value:
-                    value = value[value.index(self.name)+len(self.name):]
-                else:
-                    logging.warning("not found name of robot")
-                    break
-            else:
-                logging.info("direct mode activate")
+            if self.direct is False and hasname is False:
+                logging.warning("not found name of robot and direct mode desactivate -> break")
+                break
             for before in self._befores:
                 if len(value) > 0:
                     value = before(value)
