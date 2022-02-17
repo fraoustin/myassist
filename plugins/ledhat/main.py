@@ -2,6 +2,7 @@ from plugins import Plugin
 import time
 from robot import Robot, Singleton
 from plugins.ledhat import apa102
+import threading
 
 __version__ = "0.0.1"
 
@@ -51,12 +52,17 @@ def ledhat(value, response):
     LedHatManage().set_pixel(*response.split("|"))
 
 
+def test():
+    LedHatManage().clear()
+    for color in COLORS:
+        LedHatManage().set_pixel(color, color, color)
+        time.sleep(1)
+    LedHatManage().clear()
+
+
 class Ledhat(Plugin):
     def __init__(self, *args, **kw):
         Plugin.__init__(self, icon=False, *args, **kw)
         Robot().add_event("ledhat", ledhat)
-        LedHatManage().clear()
-        for color in COLORS:
-            LedHatManage().set_pixel(color, color, color)
-            time.sleep(2)
-        LedHatManage().clear()
+        th = threading.Thread(target=test)
+        th.start()

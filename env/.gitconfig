@@ -1,0 +1,34 @@
+[user]
+        name = myname
+        email = my.m@il.com
+[color]
+        ui = true
+[alias]
+        graph = log --graph --abbrev-commit --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short
+        graphall = log --graph --abbrev-commit --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short --all
+        logall = log --graph --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short --abbrev-commit --decorate --all
+        changes = diff --name-status
+[core]
+        editor = vim
+[log]
+        abbrevCommit = true
+[merge]
+        ff = false
+[alias]
+    tags = show-ref --abbrev=7 --tags
+    graph = log --graph --abbrev-commit --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short
+    graphall = log --graph --abbrev-commit --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short --all
+    logall = log --graph --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short --abbrev-commit --decorate --all
+    history = log --graph --pretty='%Cred%h %Cgreen%ad %Cblue%an %Creset%s' --date=short --abbrev-commit --decorate
+    changes = diff --name-status
+    sync = !git fetch && git rebase
+    undo = git reset --soft HEAD^
+    amend = commit --amend
+    fixup = !sh -c 'SHA=$(git rev-parse $1) \
+        && git commit --fixup $SHA \
+        && git rebase -i --autosquash $SHA~' -
+    # Utilisation : git fixup {sha1}
+    fetchandreset = !BRANCH=$(git rev-parse --abbrev-ref HEAD) \
+        && git fetch origin $BRANCH \
+        && git reset --hard origin/$BRANCH
+    # Utilisation : git fetchandreset

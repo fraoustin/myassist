@@ -9,26 +9,30 @@ import math
 __version__ = "0.0.1"
 
 CHANNELS = []
-BASIC_VOLUME = 50
+BASIC_VOLUME = math.fabs(50)
+VAL2VOL = ""
+VOL2VAL = ""
 
 
 def get_volume():
     global CHANNELS
+    global VAL2VOL
     stream = os.popen('amixer get %s' % CHANNELS[0])
     output = stream.read()
-    vol = 0
+    value = 0
     for extract in output.split('['):
         extract = extract.split('%]')[0]
         try:
-            vol = int(extract)
+            value = int(extract)
         except Exception:
             pass
-    return int(20.189*math.log(vol)+7.0618)
+    return int(eval(VAL2VOL % value))
 
 
 def set_volume(volume):
-    value = 20.189*math.log(volume)+7.0618
     global CHANNELS
+    global VOL2VAL
+    value = int(eval(VOL2VAL % volume))
     for channel in CHANNELS:
         os.system("amixer set %s %s%%" % (channel, value))
 
@@ -75,10 +79,16 @@ class Volume(Plugin):
 
     def init_db(self):
         if ParamApp.get("basic_volume") is None:
-            db.session.add(ParamApp(key="basic_volume", value="90"))
+            db.session.add(ParamApp(key="basic_volume", value="60"))
             db.session.commit()
         if ParamApp.get("basic_volume channels") is None:
             db.session.add(ParamApp(key="basic_volume channels", value="Speaker"))
+            db.session.commit()
+        if ParamApp.get("basic_volume val2vol") is None:
+            db.session.add(ParamApp(key="basic_volume val2vol", value="20.189*math.log(%s)+7.0618"))
+            db.session.commit()
+        if ParamApp.get("basic_volume vol2val") is None:
+            db.session.add(ParamApp(key="basic_volume vol2val", value="0.7059*math.exp(0.0495*%s)"))
             db.session.commit()
         global CHANNELS
         CHANNELS = ParamApp.getValue("basic_volume channels").split(";")

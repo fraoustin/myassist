@@ -1,0 +1,338 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+    script for env PYTHONSTARTUP
+    pip install colorconsole
+"""
+import os
+import sys
+
+import colorconsole
+import colorconsole.terminal
+
+# MANAGEMENT COLOR DEFAULT
+try:
+    if os.name == "posix":
+        # correction color and add clean
+        import colorconsole.ansi
+
+        class Terminal(colorconsole.ansi.Terminal):
+            """
+                class Terminal ansi with set_color, clean
+            """
+            colors_fg = {
+                0: "30m",  # BLACK
+                1: "34m",  # BLUE
+                2: "32m",  # GREEN
+                3: "36m",  # CYAN
+                4: "31m",  # RED
+                5: "35m",  # PURPLE
+                6: "33m",  # BROWN
+                7: "37m",  # LGREY
+                8: "1;30m",  # DGRAY
+                9: "1;34m",  # LBLUE
+                10: "1;32m",  # LGREEN
+                11: "1;36m",  # LCYAN
+                12: "1;31m",  # LRED
+                13: "1;35m",  # LPURPLE
+                14: "1;33m",  # YELLOW
+                15: "1;37m"  # WHITE
+            }
+            colors_bk = {
+                0: "40m",
+                1: "44m",
+                2: "42m",
+                3: "46m",
+                4: "41m",
+                5: "45m",
+                6: "43m",
+                7: "47m",
+            }
+
+            def __init__(self, **kw):
+                colorconsole.ansi.Terminal.__init__(self, **kw)
+
+            def set_color(self, fg=None, bk=None, stream=sys.stdout):
+                if fg is not None:
+                    stream.write(Terminal.escape + self.colors_fg[fg])
+                if bk is not None:
+                    stream.write(Terminal.escape + self.colors_bk[bk])
+
+            def clean(self, stream=sys.stdout):
+                """ clean stream"""
+                stream.write("\033[0m")
+
+        SCREEN = Terminal()
+        FOREGROUND_DEFAULT = None
+        BACKGROUND_DEFAULT = None
+    else:
+        # correction color and add clean
+        import colorconsole.win
+
+        class Terminal(colorconsole.win.Terminal):
+            """
+                class Terminal win with set_color, clean
+            """
+
+            def __init__(self, **kw):
+                colorconsole.win.Terminal.__init__(self, **kw)
+
+            def set_color(self, fg=None, bk=None, stream=sys.stdout):
+                colorconsole.win.Terminal.set_color(self, fg, bk)
+
+            def clean(self, stream=sys.stdout):
+                """ clean stream"""
+                pass
+
+        SCREEN = Terminal()
+        FOREGROUND_DEFAULT = colorconsole.terminal.colors['WHITE']
+        BACKGROUND_DEFAULT = colorconsole.terminal.colors['BLACK']
+except Exception as ex:
+    class Terminal(object):
+        """
+            class Terminal minimal with set_color, clean
+        """
+
+        def __init__(self, **kw):
+            pass
+
+        def set_color(self, fg=None, bk=None, stream=sys.stdout):
+            """ clean stream"""
+            pass
+
+        def clean(self, stream=sys.stdout):
+            """ clean stream"""
+            pass
+
+    SCREEN = Terminal()
+    FOREGROUND_DEFAULT = colorconsole.terminal.colors['WHITE']
+    BACKGROUND_DEFAULT = colorconsole.terminal.colors['BLACK']
+
+# MANAGEMENT COLOR CRITICAL
+FOREGROUND_CRITICAL = colorconsole.terminal.colors['RED']
+BACKGROUND_CRITICAL = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR ERROR
+FOREGROUND_ERROR = colorconsole.terminal.colors['PURPLE']
+BACKGROUND_ERROR = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR WARNING
+FOREGROUND_WARNING = colorconsole.terminal.colors['BROWN']
+BACKGROUND_WARNING = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR INFO
+FOREGROUND_INFO = colorconsole.terminal.colors['GREEN']
+BACKGROUND_INFO = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR DEBUG
+FOREGROUND_DEBUG = colorconsole.terminal.colors['BLUE']
+BACKGROUND_DEBUG = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR NOSET
+FOREGROUND_NOSET = FOREGROUND_DEFAULT
+BACKGROUND_NOSET = BACKGROUND_DEFAULT
+# MANAGEMENT COLOR PROMPT
+FOREGROUND_PROMPT = colorconsole.terminal.colors['BROWN']
+BACKGROUND_PROMPT = BACKGROUND_DEFAULT
+
+
+
+COLOR_OUT = [FOREGROUND_DEFAULT, BACKGROUND_DEFAULT]
+COLOR_IN = [FOREGROUND_PROMPT, BACKGROUND_PROMPT]
+COLOR_ERR = [FOREGROUND_CRITICAL, BACKGROUND_CRITICAL]
+COLOR_INFO = [FOREGROUND_INFO, BACKGROUND_INFO]
+COLOR_PROMPT = [FOREGROUND_PROMPT, BACKGROUND_PROMPT]
+
+class Unbuffered(object):
+    """
+        manage buffer
+    """
+    def __init__(self, stream):
+        self.stream = stream
+        self.line_buffering = False
+
+    def __getattr__(self, attr):
+        """
+            attr of buffer
+        """
+        return getattr(self.stream, attr)
+
+    def write(self, data):
+        """
+            write in buffer
+        """
+        pass
+
+
+class UnbufferedOut(Unbuffered):
+    """
+        manage buffer out
+    """
+    def __init__(self, stream):
+        Unbuffered.__init__(self, stream)
+
+    def write(self, data):
+        SCREEN.set_color(COLOR_OUT[0], COLOR_OUT[1], self.stream)
+        self.stream.write(data)
+        self.stream.flush()
+        SCREEN.set_color(
+            FOREGROUND_DEFAULT, BACKGROUND_DEFAULT, self.stream)
+        SCREEN.clean()
+
+    def prompt(self, data):
+        """
+            manage of prompt
+        """
+        SCREEN.set_color(COLOR_PROMPT[0], COLOR_PROMPT[1],self.stream)
+        self.stream.write(data)
+        self.stream.flush()
+        SCREEN.set_color(
+            FOREGROUND_DEFAULT, BACKGROUND_DEFAULT, self.stream)
+        SCREEN.reset()
+
+
+class UnbufferedErr(Unbuffered):
+    """
+        manage buffer err
+    """
+    def __init__(self, stream):
+        Unbuffered.__init__(self, stream)
+
+    def write(self, data):
+        SCREEN.set_color(COLOR_ERR[0], COLOR_ERR[1], self.stream)
+        self.stream.write(data)
+        self.stream.flush()
+        SCREEN.set_color(
+            FOREGROUND_DEFAULT, BACKGROUND_DEFAULT, self.stream)
+        SCREEN.clean()
+
+
+class UnbufferedIn(Unbuffered):
+    """
+        manage buffer in
+    """
+    def __init__(self, stream):
+        Unbuffered.__init__(self, stream)
+
+    def write(self, data):
+        SCREEN.set_color(COLOR_IN[0], COLOR_IN[1], self.stream)
+        self.stream.write(data)
+        self.stream.flush()
+        SCREEN.set_color(
+            FOREGROUND_DEFAULT, BACKGROUND_DEFAULT, self.stream)
+        SCREEN.clean()
+
+class UnbufferedInfo(Unbuffered):
+    """
+        manage buffer info
+    """
+    def __init__(self, stream):
+        Unbuffered.__init__(self, stream)
+
+    def write(self, data):
+        SCREEN.set_color(COLOR_INFO[0], COLOR_INFO[1], self.stream)
+        self.stream.write(data)
+        self.stream.flush()
+        SCREEN.set_color(
+            FOREGROUND_DEFAULT, BACKGROUND_DEFAULT, self.stream)
+        SCREEN.clean()
+
+
+
+sys.stderr = UnbufferedErr(sys.stderr)
+sys.stdin = UnbufferedIn(sys.stdin)
+sys.stdinfo = UnbufferedInfo(sys.stdout)
+sys.stdout = UnbufferedOut(sys.stdout)
+
+
+
+COLOR_OUT = [FOREGROUND_INFO, BACKGROUND_INFO]
+COLOR_IN = [FOREGROUND_WARNING, BACKGROUND_WARNING]
+COLOR_ERR = [FOREGROUND_CRITICAL, BACKGROUND_CRITICAL]
+COLOR_INFO = [FOREGROUND_DEFAULT, BACKGROUND_DEFAULT]
+
+
+
+class PromptPs(object):
+    """
+        manage PromptPs
+    """
+    def __init__(self, prt, env):
+        self._prt = prt
+        self._env = env
+        self.count = 0
+
+    def __str__(self):
+        self.count = self.count + 1
+        sys.stdout.prompt('%s%d%s' % (self._env, self.count, self._prt))
+        return None
+
+
+class PromptPsSpace(object):
+    """
+        manage space of PromptPs
+    """
+    def __init__(self, ps, env):
+        self._ps = ps
+        self._env = env
+
+    def __str__(self):
+        return self._env + '.' * (len(str(self._ps.count)) + len(self._ps._prt))
+
+# Environnement virtuel
+env = os.environ.get('VIRTUAL_ENV')
+if env:
+    env_name = '(%s) ' % os.path.basename(env)
+    print("\nVirtualenv '{}' contains:".format(env_name))
+    print(', '.join(sorted([dist.project_name for dist in pip.get_installed_distributions()])) + '\n')
+else:
+    env_name = ''
+     
+sys.ps1 = PromptPs(' >>', env_name)
+sys.ps2 = PromptPsSpace(sys.ps1, env_name)
+
+
+class Cls(object):
+    """
+        clear Terminal
+    """
+    def __repr__(self):
+        sys.ps1.count = 0
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return ''
+
+cls = Cls()
+
+
+class Clear(object):
+    """
+        clear Terminal
+    """
+    def __repr__(self):
+        sys.ps1.count = 0
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return ''
+
+clear = Clear()
+
+# for linux
+try:
+    import readline
+except ImportError:
+    # print "Module readline not available."
+    pass
+else:
+    try:
+        # tabulation support
+        import rlcompleter
+
+        class TabCompleter(rlcompleter.Completer):
+            """
+                Completer that supports indenting
+            """
+            def complete(self, text, state):
+                if not text:
+                    return ('    ', None)[state]
+                else:
+                    return rlcompleter.Completer.complete(self, text, state)
+
+        readline.set_completer(TabCompleter().complete)
+        readline.parse_and_bind("tab: complete")
+    except:
+        pass
+
