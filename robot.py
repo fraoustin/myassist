@@ -42,7 +42,7 @@ logger.addHandler(ch)
 
 
 def similar(a, b):
-    return SequenceMatcher(None, a, b).ratio()
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
 
 class Test:
