@@ -90,6 +90,10 @@ class Volume(Plugin):
         if ParamApp.get("basic_volume vol2val") is None:
             db.session.add(ParamApp(key="basic_volume vol2val", value="0.7059*math.exp(0.0495*volume)"))
             db.session.commit()
+        global VAL2VOL
+        VAL2VOL = ParamApp.getValue("basic_volume val2vol")
+        global VOL2VAL
+        VAL2VOL = ParamApp.getValue("basic_volume vol2val")
         global CHANNELS
         CHANNELS = ParamApp.getValue("basic_volume channels").split(";")
         global BASIC_VOLUME
