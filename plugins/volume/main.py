@@ -93,7 +93,7 @@ class Volume(Plugin):
         global VAL2VOL
         VAL2VOL = ParamApp.getValue("basic_volume val2vol")
         global VOL2VAL
-        VAL2VOL = ParamApp.getValue("basic_volume vol2val")
+        VOL2VAL = ParamApp.getValue("basic_volume vol2val")
         global CHANNELS
         CHANNELS = ParamApp.getValue("basic_volume channels").split(";")
         global BASIC_VOLUME

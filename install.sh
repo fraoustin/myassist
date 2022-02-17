@@ -6,6 +6,7 @@ apt-get upgrade
 apt-get -y install vim
 apt-get -y install htop
 apt-get -y install git
+apt-get -y install sqlite3
 apt-get -y install python3-pyaudio
 apt-get -y install stockfish
 apt-get -y install python3-mpv
