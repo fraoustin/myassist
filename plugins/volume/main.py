@@ -26,13 +26,13 @@ def get_volume():
             value = int(extract)
         except Exception:
             pass
-    return int(eval(VAL2VOL % value))
+    return int(eval(VAL2VOL.replace('value', str(value))))
 
 
 def set_volume(volume):
     global CHANNELS
     global VOL2VAL
-    value = int(eval(VOL2VAL % volume))
+    value = int(eval(VOL2VAL.replace("volume", str(volume))))
     for channel in CHANNELS:
         os.system("amixer set %s %s%%" % (channel, value))
 
@@ -85,10 +85,10 @@ class Volume(Plugin):
             db.session.add(ParamApp(key="basic_volume channels", value="Speaker"))
             db.session.commit()
         if ParamApp.get("basic_volume val2vol") is None:
-            db.session.add(ParamApp(key="basic_volume val2vol", value="20.189*math.log(%s)+7.0618"))
+            db.session.add(ParamApp(key="basic_volume val2vol", value="20.189*math.log(value)+7.0618"))
             db.session.commit()
         if ParamApp.get("basic_volume vol2val") is None:
-            db.session.add(ParamApp(key="basic_volume vol2val", value="0.7059*math.exp(0.0495*%s)"))
+            db.session.add(ParamApp(key="basic_volume vol2val", value="0.7059*math.exp(0.0495*volume)"))
             db.session.commit()
         global CHANNELS
         CHANNELS = ParamApp.getValue("basic_volume channels").split(";")

@@ -55,7 +55,7 @@ class Core(Blueprint):
             db.session.add(ParamApp(key="basic_mic langue", value="fr-FR"))
             db.session.commit()
         if ParamApp.get("basic_mic timeout") is None:
-            db.session.add(ParamApp(key="basic_mic timeout", value="0"))
+            db.session.add(ParamApp(key="basic_mic timeout", value="4"))
             db.session.commit()
         if ParamApp.get("basic_mic energy_threshold") is None:
             db.session.add(ParamApp(key="basic_mic energy_threshold", value="0"))
