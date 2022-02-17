@@ -24,8 +24,9 @@ class TimerThreadOtherFct(threading.Thread):
         self.fct = fct
 
     def run(self):
+        logging.info("timer other fct '%s' start after %s second" % (self.fct, self.timer))
         time.sleep(self.timer)
-        logging.info("timer other fct - end timer for %s second" % self.timer)
+        logging.info("timer other fct - end timer after %s second" % self.timer)
         self.robot.query(self.fct)
 
 
@@ -49,15 +50,13 @@ def check_timer(value):
                 count = int(elt) * toseconds + count
             except Exception:
                 try:
-                    print(NUMBERS)
-                    print(elt)
                     count = NUMBERS[elt] * toseconds + count
                 except Exception:
                     search = ' ' + search
             search = search.split(unity)[1:]
             while len(search) > 0 and search[0] != ' ':
                 search = search[1:]
-    print("####timer %s" % count)
+    count = int(count)
     if count == 0:
         return value
     logging.info("timer - %s in %s seconds" % (action, count))

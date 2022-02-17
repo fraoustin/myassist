@@ -32,7 +32,10 @@ def get_volume():
 def set_volume(volume):
     global CHANNELS
     global VOL2VAL
-    value = int(eval(VOL2VAL.replace("volume", str(volume))))
+    if volume == 0:
+        value = 0
+    else:
+        value = int(eval(VOL2VAL.replace("volume", str(volume))))
     for channel in CHANNELS:
         os.system("amixer set %s %s%%" % (channel, value))
 
