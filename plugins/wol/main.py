@@ -37,8 +37,6 @@ def del_wol():
             Robot().remove_training(wol, "wol:%s" % url)
             for answer in conversion['answers']:
                 Robot().remove_training("%s %s" % (answer, wol), "wol:%s" % url)
-            for answer in conversion['stop']:
-                Robot().remove_training("%s %s" % (answer, wol), "stop")
         except yaml.YAMLError as exc:
             print("!!!!! ERROR")
             print(exc)
@@ -98,11 +96,6 @@ class Wol(Plugin):
                     Robot().training(wol, "wol:%s" % wols[wol])
                     for answer in conversion['answers']:
                         Robot().training("%s %s" % (answer, wol), "wol:%s" % wols[wol])
-                for wol in wols.keys():
-                    for answer in conversion['stop']:
-                        Robot().training("%s %s" % (answer, wol), "stop")
-                for answer in conversion['stop']:
-                    Robot().training(answer, "stop")
                 global START_COMPUTER
                 START_COMPUTER = doc['chatbot']['start']['answers'][0]
             except yaml.YAMLError as exc:

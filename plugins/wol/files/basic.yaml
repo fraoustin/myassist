@@ -1,12 +1,7 @@
 chatbot:
     wol:
         answers:
-            - joue
-            - lance
-        stop:
-            - stop
-            - arrête
-            - silence
+            - démarre
     start:
         answers:
             - je démarre l'ordinateur
