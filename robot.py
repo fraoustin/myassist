@@ -280,7 +280,7 @@ class Robot(metaclass=Singleton):
                     values[idx-1] = ''
             except IndexError:
                 pass
-        logging.info("query list %s" % values)
+        logging.info("query list %s" % [val for val in values if len(val) > 0])
         for value in [val for val in values if len(val) > 0]:
             logging.info("query treat %s" % value)
             start = time.time()

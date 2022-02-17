@@ -11,3 +11,4 @@
 
 - voir gestion agenda via mail
 - pb de silence dans 1 minute et lance france inter
+- trouver un moye de gérer les moteurs et le son
