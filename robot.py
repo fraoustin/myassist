@@ -280,7 +280,9 @@ class Robot(metaclass=Singleton):
                     values[idx-1] = ''
             except IndexError:
                 pass
+        logging.info("query list %s" % values)
         for value in [val for val in values if len(val) > 0]:
+            logging.info("query treat %s" % value)
             start = time.time()
             if self.direct is False and hasname is False:
                 logging.warning("not found name of robot and direct mode desactivate -> break")
@@ -310,6 +312,7 @@ class Robot(metaclass=Singleton):
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
                 return True
+            logging.warning("before cancel %s" % value)
             return False
 
     def _stopsound(self, *args):
