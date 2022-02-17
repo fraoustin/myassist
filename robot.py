@@ -311,9 +311,9 @@ class Robot(metaclass=Singleton):
                     if self.direct is False:
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
-                return True
-            logging.warning("before cancel %s" % value)
-            return False
+            else:
+                logging.warning("before cancel %s" % value)
+        return True
 
     def _stopsound(self, *args):
         try:
