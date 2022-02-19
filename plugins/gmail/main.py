@@ -11,10 +11,9 @@ from flask_login import login_required, current_user
 import urllib
 import base64
 from xml.dom.minidom import parse
-from icalendar import Calendar
-from datetime import datetime, timedelta
-import tempfile
-import time
+from datetime import date
+import imaplib
+import email
 
 __version__ = "0.0.1"
 
@@ -23,9 +22,47 @@ NOT_EVENTS = "not events"
 
 class GmailProfil(metaclass=Singleton):
 
-    def __init__(self, user, password):
+    def __init__(self, user, password, fromagenda):
+        self._agenda = ""
+        self.update(user, password, fromagenda)
+
+    def update(self, user, password, fromagenda):
         self.user = user
         self.password = password
+        self.fromagenda = fromagenda
+        today = date.today().strftime("%d %b %Y")
+        try:
+            mail = imaplib.IMAP4_SSL("imap.gmail.com")
+            mail.login(self.user, self.password)
+            mail.select('inbox')
+            type, data = mail.search(None, 'ALL')
+            for num in data[0].split():
+                rv, data = mail.fetch(num, '(BODY.PEEK[])')
+                for response_part in data:
+                    msg = email.message_from_bytes(data[0][1])
+                    if msg['from'] == self.fromagenda:
+                        if today in msg.get("Date"):
+                            for part in msg.walk():
+                                if part.get_content_type() == "text/plain":
+                                    body = part.get_payload(decode=True)
+                                    try:
+                                        body = body.decode('utf-8')
+                                    except Exception:
+                                        pass
+                                else:
+                                    continue
+                            body = body.replace("%s ," % self.user, "")
+                            try:
+                                self._agenda = '\n\r'.join(body.split('\n\r')[:-3])
+                            except Exception:
+                                pass
+                        else:
+                            mail.store(num, '+FLAGS', '\\Deleted')
+            mail.expunge()
+            mail.close()
+            mail.logout()
+        except Exception:
+            pass
 
     @property
     def emails(self):
@@ -39,62 +76,9 @@ class GmailProfil(metaclass=Singleton):
         count_obj = dom.getElementsByTagName("fullcount")[0]
         return int(count_obj.firstChild.wholeText)
 
-
-class CalendarProfil(metaclass=Singleton):
-
-    def __init__(self, calendars=[]):
-        self.calendars = calendars
-
-    def _read_from_cal(self, url):
-        events = []
-        req = urllib.request.Request(url)
-        handle = urllib.request.urlopen(req)
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            path = os.path.join(tmpdirname, "%s.ics" % int(time.time()))
-            with open(path, 'wb') as file:
-                file.write(handle.read())
-            g = open(path, 'rb')
-            gcal = Calendar.from_ical(g.read())
-            handle.close()
-            today = datetime.now().date()
-            for component in gcal.walk():
-                try:
-                    if component.name == "VEVENT":
-                        summ = component.get('summary')
-                        start = component.get('dtstart').dt
-                        end = component.get('dtend').dt
-                        try:
-                            if component.get('rrule')['FREQ'][0] == 'YEARLY' and component.get('rrule').get('UNTIL', None) is None:
-                                start = datetime.strptime('2022%s' % start.strftime("%m%d"), "%Y%m%d").date()
-                                end = datetime.strptime('2022%s' % end.strftime("%m%d"), "%Y%m%d").date()
-                            if component.get('rrule')['FREQ'][0] == 'WEEKLY' and component.get('rrule').get('UNTIL', None) is None:
-                                if today > start.date():
-                                    while today >= start.date():
-                                        start = start + timedelta(days=7)
-                                        end = end + timedelta(days=7)
-                                    start = start + timedelta(days=-7)
-                                    end = end + timedelta(days=-7)
-                        except Exception:
-                            pass
-                        if isinstance(start, datetime):
-                            end = end.date()
-                            start = start.date()
-                            if end >= today >= start:
-                                events.append(summ)
-                        else:
-                            if end > today >= start:
-                                events.append(summ)
-                except Exception:
-                    pass
-        handle.close()
-        return events
-
     @property
-    def events(self):
-        events = []
-        for calendar in self.calendars:
-            events = events + self._read_from_cal(self.calendars[calendar])
-        return events
+    def agenda(self):
+        return self._agenda
 
 
 @login_required
@@ -103,40 +87,15 @@ def gmail():
 
 
 @login_required
-def del_gmail():
-    gmails = json.loads(ParamApp.getValue("gmail"))
-    gmail = request.form.get('gmail')
-    if request.form.get('gmail', '') in gmails["calendars"]:
-        del gmails["calendars"][request.form.get('gmail', '')]
-    paramgmail = ParamApp.get("gmail")
-    paramgmail.value = json.dumps(gmails)
-    paramgmail.save()
-    CalendarProfil.calendars = gmails["calendars"]
-    logging.info("gmail - del calendar %s" % gmail)
-    return {'status': 'ok'}, 200
-
-
-@login_required
-def add_gmail():
-    gmails = json.loads(ParamApp.getValue("gmail"))
-    gmails["calendars"][request.form.get('name')] = request.form.get('url')
-    paramgmail = ParamApp.get("gmail")
-    paramgmail.value = json.dumps(gmails)
-    paramgmail.save()
-    CalendarProfil.calendars = gmails["calendars"]
-    logging.info("gmail - add calendar %s" % request.form.get('name'))
-    return {'status': 'ok'}, 200
-
-
-@login_required
 def param_gmail():
     gmails = json.loads(ParamApp.getValue("gmail"))
     gmails["user"] = request.form.get('gmailuser')
     gmails["password"] = request.form.get('gmailpassword')
+    gmails["fromagenda"] = request.form.get('fromagenda')
     paramgmail = ParamApp.get("gmail")
     paramgmail.value = json.dumps(gmails)
     paramgmail.save()
-    GmailProfil(user=gmails["user"], password=gmails["password"])
+    GmailProfil().update(user=gmails["user"], password=gmails["password"], fromagenda=gmails["fromagenda"])
     logging.info("gmail - save param")
     return {'status': 'ok'}, 200
 
@@ -147,28 +106,21 @@ def listengmail(value, response):
 
 
 def listencalendar(value, response):
-    global NOT_EVENTS
-    logging.info("gmail - listen calendar")
-    events = CalendarProfil().events
-    if len(events) > 0:
-        Robot().emit_event("", "say:%s" % "\n".join(events))
-    else:
-        Robot().emit_event("", "say:%s" % NOT_EVENTS)
+    logging.info("gmail - listen number mail")
+    Robot().emit_event("", "say:%s" % GmailProfil().agenda)
 
 
 class Gmail(Plugin):
     def __init__(self, *args, **kw):
         Plugin.__init__(self, *args, **kw)
         self.add_url_rule('/gmail', 'gmail', gmail, methods=['GET'])
-        self.add_url_rule('/api/gmail/del', 'del_gmail', del_gmail, methods=['POST'])
-        self.add_url_rule('/api/gmail/add', 'add_gmail', add_gmail, methods=['POST'])
         self.add_url_rule('/api/gmail/param', 'param_gmail', param_gmail, methods=['POST'])
         Robot().add_event("gmail", listengmail)
         Robot().add_event("calendar", listencalendar)
 
     def init_db(self):
         if ParamApp.get("gmail") is None:
-            db.session.add(ParamApp(key="gmail", value=json.dumps({"user": "", "password": "", "calendars": {}})))
+            db.session.add(ParamApp(key="gmail", value=json.dumps({"user": "xxxx@gmail.com", "password": "your_password", "fromagenda": "Google Agenda <calendar-notification@google.com>"})))
             db.session.commit()
         gmails = json.loads(ParamApp.getValue("gmail"))
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "basic.yaml"), "r") as stream:
@@ -186,5 +138,4 @@ class Gmail(Plugin):
             except yaml.YAMLError as exc:
                 print("!!!!! ERROR")
                 print(exc)
-        GmailProfil(user=gmails["user"], password=gmails["password"])
-        CalendarProfil(calendars=gmails["calendars"])
+        GmailProfil(user=gmails["user"], password=gmails["password"], fromagenda=gmails["fromagenda"])

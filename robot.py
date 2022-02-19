@@ -9,7 +9,10 @@ import os
 import random
 from num2words import num2words
 import speech_recognition as sr
-import mpv
+try:
+    import mpv
+except Exception:
+    pass
 
 
 class RobotHandler(logging.Handler):

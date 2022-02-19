@@ -17,3 +17,4 @@ wakeonlan>=2.1.0
 pyjokes>=0.6.0
 python-mpv>=0.5.2
 chess>=1.8.0
+spidev>=3.5
