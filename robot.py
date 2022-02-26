@@ -297,7 +297,7 @@ class Robot(metaclass=Singleton):
                 else:
                     continue
             if len(value) > 0:
-                self.robot.emit_event("", "ledhat:green|green|green")
+                self.emit_event("", "ledhat:green|green|green")
                 value = value.strip()
                 logging.info("query %s" % value)
                 results = []
@@ -316,7 +316,7 @@ class Robot(metaclass=Singleton):
                     if self.direct is False:
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
-                self.robot.emit_event("", "ledhat:black|black|black")
+                self.emit_event("", "ledhat:black|black|black")
             else:
                 logging.warning("before cancel %s" % value)
         return True
