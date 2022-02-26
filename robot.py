@@ -156,18 +156,18 @@ class Mic(threading.Thread):
                 start = time.time()
                 if self.timeout == 0:
                     logging.info("listen without timeout")
-                    self.robot.emit_event("", "ledhat:red|red|red")
+                    #self.robot.emit_event("", "ledhat:red|red|red")
                     audio = recognize.listen(source)
                 else:
                     logging.info("listen with timeout %s" % self._timeout)
-                    self.robot.emit_event("", "ledhat:red|red|red")
+                    #self.robot.emit_event("", "ledhat:red|red|red")
                     audio = recognize.listen(source, phrase_time_limit=self._timeout)
                 end = time.time()
                 try:
-                    self.robot.emit_event("", "ledhat:green|green|green")
+                    #self.robot.emit_event("", "ledhat:green|green|green")
                     logging.info("listen %s second" % str(end-start))
                     data = recognize.recognize_google(audio, language=self.langue)
-                    self.robot.emit_event("", "ledhat:blue|blue|blue")
+                    #self.robot.emit_event("", "ledhat:blue|blue|blue")
                     logging.info("recognize - %s" % data)
                     self.robot.query(data.strip())
                 except Exception:
@@ -297,6 +297,7 @@ class Robot(metaclass=Singleton):
                 else:
                     continue
             if len(value) > 0:
+                self.robot.emit_event("", "ledhat:green|green|green")
                 value = value.strip()
                 logging.info("query %s" % value)
                 results = []
@@ -315,6 +316,7 @@ class Robot(metaclass=Singleton):
                     if self.direct is False:
                         logging.debug("_query value: %s  only local base of %s" % (str(end - start), len(self._responses)))
                         self.emit_event(value, response)
+                self.robot.emit_event("", "ledhat:black|black|black")
             else:
                 logging.warning("before cancel %s" % value)
         return True
