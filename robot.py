@@ -330,13 +330,16 @@ class Robot(metaclass=Singleton):
     def _playsound(self):        
         while True:
             self._playbin = mpv.MPV(ytdl=True)
-            self._playbin.play(self._queue_playsound.get())
+            path = self._queue_playsound.get()
+            logging.info("playsound %s" % path)
+            self._playbin.play(path)
 
     @logtime
     def speak(self, words):
         tts = gtts.gTTS(words, lang="fr")
         path = os.path.join(tempfile.gettempdir(), "%s.mp3" % int(time.time()))
         tts.save(path)
+        logging.info("speak %s" % path)
         self._queue_playsound.put(path)
 
     @property
