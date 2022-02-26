@@ -70,7 +70,7 @@ def add_radio():
 def listenradio(value, response):
     logging.info("radio - listen %s" % response)
     Robot()._stopsound()
-    Robot()._queue_playsound(response)
+    Robot()._playsound(response)
 
 
 def stop(value, response):

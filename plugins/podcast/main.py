@@ -74,7 +74,7 @@ def listenpodcast(value, response):
     link = [link['href'] for link in feed.entries[0].links if link['href'].endswith(".mp3") is True][0]
     logging.debug("podcast - listen feed %s" % link)
     Robot()._stopsound()
-    Robot()._queue_playsound(link)
+    Robot()._playsound(link)
 
 
 class Podcast(Plugin):

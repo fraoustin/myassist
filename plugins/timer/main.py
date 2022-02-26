@@ -73,7 +73,7 @@ def timerotherfct(value, response):
 def buzzer(value, response):
     logging.info("buzzer - %s" % response)
     Robot()._stopsound()
-    Robot()._queue_playsound(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "buzzer.mp3"))
+    Robot()._playsound(os.path.join(os.path.dirname(os.path.abspath(__file__)), "files", "buzzer.mp3"))
 
 
 class Timer(Plugin):

@@ -210,7 +210,6 @@ class Robot(metaclass=Singleton):
         self._responses = []
         self._befores = []
         self._queue = Queue()
-        self._queue_playsound = Queue()
         self._thread = None
         self._playbin = None
         self._direct = 'False'
@@ -327,12 +326,10 @@ class Robot(metaclass=Singleton):
         except Exception:
             pass
 
-    def _playsound(self):        
-        while True:
-            self._playbin = mpv.MPV(ytdl=True)
-            path = self._queue_playsound.get()
-            logging.info("playsound %s" % path)
-            self._playbin.play(path)
+    def _playsound(self, path):        
+        self._playbin = mpv.MPV(ytdl=True)
+        logging.info("playsound %s" % path)
+        self._playbin.play(path)
 
     @logtime
     def speak(self, words):
@@ -340,7 +337,7 @@ class Robot(metaclass=Singleton):
         path = os.path.join(tempfile.gettempdir(), "%s.mp3" % int(time.time()))
         tts.save(path)
         logging.info("speak %s" % path)
-        self._queue_playsound.put(path)
+        self._playsound(path)
 
     @property
     def direct(self):
